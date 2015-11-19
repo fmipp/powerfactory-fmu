@@ -8,7 +8,7 @@
 # This script creates a new release of the FMI++ PowerFactory FMU Export Utility.
 #
 # Before running this scrip, do the following:
-#   - compile the documentation (doc\trnsys-fmu-doc.tex)
+#   - compile the documentation (doc\powerfactory-fmu-doc.tex)
 #   - compile the FMI++ related binaries (release\CMakeLists.txt)
 #   - copy the external BOOST libraries (see binaries\README.txt)
 #
@@ -20,7 +20,7 @@ import sys, os, zipfile, zlib
 # List of files (including relative path) from the repository that are part of the release.
 files_for_release = [
     'powerfactory-fmu-install.py', # installation script
-    'powerfactory-fmu-create.py', # script for creating a TRNSYS FMU
+    'powerfactory-fmu-create.py', # script for creating a PowerFactory FMU
     'build.bat', # batch script for FMU compilation
 	'binaries\\README.txt',
     'license\\BOOST_SOFTWARE_LICENSE.txt',
@@ -49,7 +49,6 @@ required_binaries = [
     'binaries\\libboost_system-vc100-mt-1_58.lib', # static BOOST System libarary
     'binaries\\libboost_thread-vc100-mt-1_58.lib', # static BOOST Thread libarary
     'binaries\\libfmipp_fmu_frontend.lib', # static library containing pre-compiled parts of the front end
-    'binaries\\Type6139Lib.dll', # implementation of Type6139
     'binaries\\PFSim.lib', # static PFSim wrapper library
     'binaries\\digexdyn.lib', # include library for 'digexdyn.dll'
     'binaries\\digexdyn.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf152)
@@ -92,7 +91,7 @@ def createRelease( release_file, release_name, cwd ):
     for file in required_binaries:
         release_file.write( cwd + '\\..\\' + file, base_name + file )
     
-    release_file.write( cwd + '\\..\\' + doc_file, base_name + 'documentation\\trnsys-fmu-doc.pdf' )
+    release_file.write( cwd + '\\..\\' + doc_file, base_name + 'documentation\\powerfactory-fmu-doc.pdf' )
 
 
 if __name__ == "__main__":
@@ -113,7 +112,7 @@ if __name__ == "__main__":
         sys.exit()
     
     # Define release name.
-    release_name = 'trnsys-fmu-' + sys.argv[1]
+    release_name = 'powerfactory-fmu-' + sys.argv[1]
 
     # Define release file name.
     release_file_name = release_name + '.zip'
