@@ -32,6 +32,15 @@
 \usepackage[utf8]{inputenc} % Required for including letters with accents
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 
+% For fancy verbatim environment with code highlights.
+\usepackage{fancyvrb}
+\usepackage{color}
+\newcommand\codeHighlightRed[1]{\textcolor[rgb]{1,0,0}{\textbf{#1}}}
+\newcommand\codeHighlightBrown[1]{\textcolor[rgb]{0.9,0.68,0.49}{\textbf{#1}}}
+\newcommand\codeHighlightGreen[1]{\textcolor[rgb]{0.4,0.6,0.3}{\textbf{#1}}}
+\newcommand\codeHighlightBlue[1]{\textcolor[rgb]{0,0,1}{\textbf{#1}}}
+\newcommand\codeHighlightPurple[1]{\textcolor[rgb]{0.68,0,1}{\textbf{#1}}}
+
 % Bibliography
 %\usepackage[style=alphabetic,sorting=nyt,sortcites=true,autopunct=true,babel=hyphen,hyperref=true,abbreviate=false,backref=true,backend=biber]{biblatex}
 %\addbibresource{bibliography.bib} % BibTeX bibliography file

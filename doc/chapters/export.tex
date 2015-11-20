@@ -1,3 +1,30 @@
 \chapter{Exporting \pf models as FMUs}
 
 
+\section{Exporting models using triggers}
+
+
+\section{Exporting models using DPL scripts}
+
+
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+
+  \codeHighlightGreen{! Change date/time of active study case,}
+  \codeHighlightGreen{! using the hour of the year (as float).}
+  \codeHighlightGreen{!}
+  \codeHighlightGreen{! ATTENTION: The script doesn't properly}
+  \codeHighlightGreen{! handle simulation runs longer than one}
+  \codeHighlightGreen{! year.}
+
+  \codeHighlightBlue{object} \textcolor{black}{set_time;}
+
+  \textcolor{black}{set_time =} \codeHighlightBlue{GetCaseObject}\textcolor{black}{(} \codeHighlightRed{'SetTime'} \textcolor{black}{);}
+
+  \codeHighlightBlue{if} \textcolor{black}{( set_time ) \{}
+  \textcolor{black}{  set_time:min = 0.0;}
+  \textcolor{black}{  set_time:sec = 0.0;}
+  \textcolor{black}{  set_time.SetTime( hour_of_year );}
+  \textcolor{black}{\}}
+
+\end{Verbatim}
