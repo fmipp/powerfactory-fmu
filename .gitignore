@@ -1,0 +1,20 @@
+# ignore binaries
+binaries/*.dll
+binaries/*.lib
+
+# ignore FMUs for testing
+*.fmu
+
+# ignore pickle file from installation process
+powerfactory-fmu-install.pkl
+
+# ignore output from compiling the documentation
+doc/powerfactory-fmu-doc.aux
+doc/powerfactory-fmu-doc.bbl
+doc/powerfactory-fmu-doc.blg
+doc/powerfactory-fmu-doc.log
+doc/powerfactory-fmu-doc.out
+doc/powerfactory-fmu-doc.pdf
+doc/powerfactory-fmu-doc.ptc
+doc/powerfactory-fmu-doc.synctex.gz
+doc/powerfactory-fmu-doc.toc
