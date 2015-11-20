@@ -20,21 +20,12 @@ doc/powerfactory-fmu-doc.synctex.gz
 doc/powerfactory-fmu-doc.toc
 
 # ignore extra files from running CMake
-ALL_BUILD.vcxproj
-ALL_BUILD.vcxproj.filters
-ALL_BUILD.vcxproj.user
+ALL_BUILD.*
 CMakeCache.txt
 CMakeFiles
-FMIPP_POWERFACTORY_FMU_EXPORT.opensdf
-FMIPP_POWERFACTORY_FMU_EXPORT.sdf
-FMIPP_POWERFACTORY_FMU_EXPORT.sln
+FMIPP_POWERFACTORY_FMU_EXPORT.*
 Release
 Win32
-ZERO_CHECK.vcxproj
-ZERO_CHECK.vcxproj.filters
-ZERO_CHECK.vcxproj.user
+ZERO_CHECK.*
 cmake_install.cmake
-libfmipp_fmu_frontend.dir
-libfmipp_fmu_frontend.vcxproj
-libfmipp_fmu_frontend.vcxproj.filters
-libfmipp_fmu_frontend.vcxproj.user
+libfmipp_fmu_frontend.*
