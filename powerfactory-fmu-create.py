@@ -114,10 +114,6 @@ def generatePowerFactoryFMU(
 	# Replace template arguments in footer.
 	#
 
-	# URI of PowerFactory main executable (TRNExe.exe).
-	powerfactory_exe_uri = urlparse.urljoin( 'file:', urllib.pathname2url( pf_install_dir ) ) + '/exe/trnexe.exe'
-	model_description_footer = model_description_footer.replace( '__TRNEXE_URI__', powerfactory_exe_uri )
-
 	# Input deck file.
 	model_description_footer = model_description_footer.replace( '__PFD_FILE_NAME__', os.path.basename( pfd_file_name ) )
 
