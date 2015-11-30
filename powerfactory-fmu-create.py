@@ -23,7 +23,8 @@ def generatePowerFactoryFMU(
 		fmi_input_vars,
 		fmi_output_vars,
 		start_values,
-		optional_files ):
+		optional_files,
+		pf_fmu_root_dir ):
 	"""Generate an FMU for PowerFactory.
 
     Keyword arguments:
@@ -36,6 +37,7 @@ def generatePowerFactoryFMU(
 	fmi_output_vars -- definition of output variable names (list of strings)
 	start_values -- definition of start values (map of strings to strings)
 	optional_files -- definition of additional files (list of strings)
+        pf_fmu_root_dir -- path to root dir of PF FMU Export Utility (string)
 	"""
 	
 	# Template string for XML model description header.
@@ -173,7 +175,7 @@ def generatePowerFactoryFMU(
 	fmu_shared_library_name = fmi_model_identifier + '.dll'
 
 	# Check if batch file for build process exists.
-	build_process_batch_file = 'build.bat'
+	build_process_batch_file = pf_fmu_root_dir + '\\build.bat'
 	if ( False == os.path.isfile( build_process_batch_file ) ):
 		print '\n[ERROR] Could not find file', build_process_batch_file
 		raise Exception( 15 )
@@ -284,6 +286,9 @@ if __name__ == "__main__":
 	# File containing FMI output variable names.
 	output_var_file_name = None
 
+        # Relative or absolute path to PF FMU Export Utility.
+        pf_fmu_root_dir = os.path.dirname( sys.argv[0] ) if len( os.path.dirname( sys.argv[0] ) ) else '.'
+
 	# List of optional files (e.g., weather file)
 	optional_files = []
 
@@ -354,8 +359,9 @@ if __name__ == "__main__":
         
 	# No PowerFactory install directory provided -> read from file (created by script 'powerfactory-fmu-install.py').
 	if ( None == pf_install_dir ):
-		if ( True == os.path.isfile( 'powerfactory-fmu-install.pkl' ) ):
-			pkl_file = open( 'powerfactory-fmu-install.pkl', 'rb' )
+                pkl_file_name = pf_fmu_root_dir + '\\powerfactory-fmu-install.pkl'
+		if ( True == os.path.isfile( pkl_file_name ) ):
+			pkl_file = open( pkl_file_name, 'rb' )
 			pf_install_dir = pickle.load( pkl_file )
 			pkl_file.close()
 		else:
@@ -457,7 +463,8 @@ if __name__ == "__main__":
 			fmi_input_vars,
 			fmi_output_vars,
 			start_values,
-			optional_files )
+			optional_files,
+			pf_fmu_root_dir )
 	except Exception as e:
 		sys.exit( e.args[0] )
 	
