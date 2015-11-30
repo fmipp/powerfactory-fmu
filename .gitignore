@@ -1,6 +1,16 @@
 # ignore binaries
-binaries/*.dll
-binaries/*.lib
+binaries/PFSim.lib
+binaries/digexdyn.lib
+binaries/digexdyn.dll
+binaries/digexfun1.lib
+binaries/digexfun1.dll
+binaries/libboost_chrono-vc100-mt-1_58.lib
+binaries/libboost_date_time-vc100-mt-1_58.lib
+binaries/libboost_filesystem-vc100-mt-1_58.lib
+binaries/libboost_regex-vc100-mt-1_58.lib
+binaries/libboost_system-vc100-mt-1_58.lib
+binaries/libboost_thread-vc100-mt-1_58.lib
+binaries/libfmipp_fmu_frontend.lib
 
 # ignore FMUs for testing
 *.fmu
@@ -20,12 +30,12 @@ doc/powerfactory-fmu-doc.synctex.gz
 doc/powerfactory-fmu-doc.toc
 
 # ignore extra files from running CMake
-ALL_BUILD.*
-CMakeCache.txt
-CMakeFiles
-FMIPP_POWERFACTORY_FMU_EXPORT.*
-Release
-Win32
-ZERO_CHECK.*
-cmake_install.cmake
-libfmipp_fmu_frontend.*
+release/ALL_BUILD.*
+release/CMakeCache.txt
+release/CMakeFiles
+release/FMIPP_POWERFACTORY_FMU_EXPORT.*
+release/Release
+release/Win32
+release/ZERO_CHECK.*
+release/cmake_install.cmake
+release/libfmipp_fmu_frontend.*
