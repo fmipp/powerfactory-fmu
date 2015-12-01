@@ -16,7 +16,10 @@ binaries/libfmipp_fmu_frontend.lib
 *.fmu
 
 # ignore pickle file from installation process
-powerfactory-fmu-install.pkl
+powerfactory_fmu_install.pkl
+
+# ignore .pyc files
+*.pyc
 
 # ignore output from compiling the documentation
 doc/powerfactory-fmu-doc.aux

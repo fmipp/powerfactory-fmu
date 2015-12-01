@@ -231,7 +231,7 @@ def usage():
 	print '\nABOUT:'
 	print 'This script generates FMUs for Co-Simulation (tool coupling) from PowerFactory'
 	print '\nUSAGE:'
-	print 'python powerfactory-fmu-create.py [-h] [-v] [-d pf_install_dir] -m model_id -p pfd_file [-i input_var_file] [-o output_var_file] [-t name:scale] [-s name:scale:offset] [additional_file_1 ... additional_file_N] [var1=start_val1 ... varN=start_valN]'
+	print 'python powerfactory_fmu_create.py [-h] [-v] [-d pf_install_dir] -m model_id -p pfd_file [-i input_var_file] [-o output_var_file] [-t name:scale] [-s name:scale:offset] [additional_file_1 ... additional_file_N] [var1=start_val1 ... varN=start_valN]'
 	print '\nREQUIRED ARGUMENTS:'
 	print '-m, --model-id=\t\tspecify FMU model identifier'
 	print '-p, --pfd-file=\tpath to PowerFactory PFD file'
@@ -357,15 +357,15 @@ if __name__ == "__main__":
 		usage()
 		sys.exit(4)
         
-	# No PowerFactory install directory provided -> read from file (created by script 'powerfactory-fmu-install.py').
+	# No PowerFactory install directory provided -> read from file (created by script 'powerfactory_fmu_install.py').
 	if ( None == pf_install_dir ):
-                pkl_file_name = pf_fmu_root_dir + '\\powerfactory-fmu-install.pkl'
+                pkl_file_name = pf_fmu_root_dir + '\\powerfactory_fmu_install.pkl'
 		if ( True == os.path.isfile( pkl_file_name ) ):
 			pkl_file = open( pkl_file_name, 'rb' )
 			pf_install_dir = pickle.load( pkl_file )
 			pkl_file.close()
 		else:
-			print '\n[ERROR] Please re-run script \'powerfactory-fmu-install.py\' or provide PowerFactory install directory via command line option -d (--pf-install-dir)!'
+			print '\n[ERROR] Please re-run script \'powerfactory_fmu_install.py\' or provide PowerFactory install directory via command line option -d (--pf-install-dir)!'
 			usage()
 			sys.exit(5)
 

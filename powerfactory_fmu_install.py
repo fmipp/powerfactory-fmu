@@ -7,8 +7,8 @@ import sys, os, shutil, pickle
 
 
 def savePowerFactoryInstallDir( pf_install_dir ):
-        # Save name of install directory to file (used by script 'trnsys-fmu-create.py').
-        output = open( 'powerfactory-fmu-install.pkl', 'wb' )
+        # Save name of install directory to file (used by script 'powerfactory_fmu_create.py').
+        output = open( 'powerfactory_fmu_install.pkl', 'wb' )
         pickle.dump( pf_install_dir, output )
         output.close()
 
@@ -36,17 +36,17 @@ if __name__ == "__main__":
         # Check for correct number of input parameters.
         if( 2 != len( sys.argv ) ):
                 print '\nERROR: Wrong number of arguments!'
-                print '\nUsage:\n\n\tpython powerfactory-fmu-install.py <powerfactory-install-directory>\n'
+                print '\nUsage:\n\n\tpython powerfactory_fmu_install.py <powerfactory_install_directory>\n'
                 sys.exit()
 
-        # Set TRNSYS installation directory.
+        # Set PowerFactory installation directory.
         pf_install_dir = sys.argv[1]
         
         # Check if directory exists.
         if( False == os.path.isdir( pf_install_dir ) ):
                 print '\nERROR:', pf_install_dir, 'is not a valid directory'
 	
-        # Save name of install directory to file (used by script 'trnsys-fmu-create.py').
+        # Save name of install directory to file (used by script 'powerfactory_fmu_create.py').
         savePowerFactoryInstallDir( pf_install_dir )
         
         # Install PFSim.
