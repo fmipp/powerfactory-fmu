@@ -2,7 +2,31 @@
 
 \section{Software requirements}
 
+The \fmipp \pf FMU Export Utility is intended to run on Windows~7~(32-bit).
+
+The following applications need to be installed prior to installing the \fmipp \pf FMU Export Utility:
+\begin{itemize}
+  \item \href{http://www.digsilent.com/}{DIgSILENT~\pf}~15.2.4~(32-bit)
+  \item \href{https://www.python.org/}{\python} (tested with \python~2.7)
+  \item Microsoft Visual C++ 2010 Express
+\end{itemize}
+
 
 \section{Installation}
 \label{sec:install}
 
+To install the \fmipp \pf FMU Export Utility , proceed as follows:
+\begin{itemize}
+  \item Download the latest version as ZIP-file from the \href{http://sourceforge.net/projects/powerfactory-fmu/files/latest/download}{download page}.
+  \item Unzip the installation file into any sub directory (referred to as the \emph{installation directory}).
+\end{itemize}
+
+Installation requires to execute \python from the command prompt window, please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this.
+
+Open the command prompt window, change to the installation directory and execute the script \texttt{powerfactory\_fmu\_install.py}:
+\begin{verbatim}
+python.exe powerfactory_fmu_install.py <pf_install_dir>
+\end{verbatim}
+where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf152}).
+
+After successful installation, the \pf installation directory contains two new files, \texttt{digexdyn.dll} and \texttt{digexfun1.dll}.

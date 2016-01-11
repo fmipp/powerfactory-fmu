@@ -286,8 +286,8 @@ if __name__ == "__main__":
 	# File containing FMI output variable names.
 	output_var_file_name = None
 
-        # Relative or absolute path to PF FMU Export Utility.
-        pf_fmu_root_dir = os.path.dirname( sys.argv[0] ) if len( os.path.dirname( sys.argv[0] ) ) else '.'
+	# Relative or absolute path to PF FMU Export Utility.
+	pf_fmu_root_dir = os.path.dirname( sys.argv[0] ) if len( os.path.dirname( sys.argv[0] ) ) else '.'
 
 	# List of optional files (e.g., weather file)
 	optional_files = []
