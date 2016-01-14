@@ -32,13 +32,15 @@ additional_files = [
     'license\\BOOST_SOFTWARE_LICENSE.txt',
     'license\\FMIPP_LICENSE.txt',
     'license\\POWERFACTORY_FMU_LICENSE.txt',
-    'test\\README.txt',
-    'test\\TestDPLScript.pfd',
-    'test\\TestDPLScript-inputs.txt',
-    'test\\TestDPLScript-outputs.txt',
-    'test\\TestTriggers.pfd',
-    'test\\TestTriggers-inputs.txt',
-    'test\\TestTriggers-outputs.txt'
+    'test\\dplscript\\README.txt',
+    'test\\dplscript\\TestDPLScript.pfd',
+    'test\\dplscript\\TestDPLScript-inputs.txt',
+    'test\\dplscript\\TestDPLScript-outputs.txt',
+    'test\\triggers\\README.txt',
+    'test\\triggers\\TestTriggers.pfd',
+    'test\\triggers\\TestTriggers-inputs.txt',
+    'test\\triggers\\TestTriggers-outputs.txt',
+    'test\\triggers\\TestTriggers-characteristics.csv'
 ]
 
 # List of files (without binaries and docs) that are part of the release.
