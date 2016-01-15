@@ -29,7 +29,7 @@ REM Define FMI export functions implementation file.
 SET FMI_FUNCTIONS_IMPLEMENTATION=%~DP0\sources\export\functions\fmiFunctions.cpp
 
 REM Define include flags for CL.
-SET INCLUDE_FLAGS=/I%~DP0\sources /I%~DP0\sources\export\examples\powerfactory
+SET INCLUDE_FLAGS=/I%~DP0\sources /I%~DP0\sources\export\tools\powerfactory
 
 REM Define library path for CL.
 SET LIBRARY_PATH=%~DP0\binaries

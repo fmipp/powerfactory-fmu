@@ -20,7 +20,7 @@ files_from_fmipp = [
     'sources\\export\\functions\\fmiFunctions.cpp',
     'sources\\export\\functions\\fmiFunctions.h',
     'sources\\export\\include\\FMIComponentFrontEndBase.h',
-    'sources\\export\\examples\\powerfactory\\PowerFactoryFrontEnd.h'
+    'sources\\export\\tools\\powerfactory\\PowerFactoryFrontEnd.h'
 ]
 
 # Additional list of files (including relative path) from the repository that are part of the release.

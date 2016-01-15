@@ -83,10 +83,10 @@ endif ()
 
 # PowerFactory front end component library (for FMU DLL).
 add_library( libfmipp_fmu_frontend STATIC
-	     ${User_FMIPP_SOURCE_DIR}/export/examples/powerfactory/PowerFactoryFrontEnd.cpp
-	     ${User_FMIPP_SOURCE_DIR}/export/examples/powerfactory/PowerFactoryTimeAdvance.cpp
-	     ${User_FMIPP_SOURCE_DIR}/export/examples/powerfactory/PowerFactoryExtraOutput.cpp
-	     ${User_FMIPP_SOURCE_DIR}/export/examples/powerfactory/PowerFactoryRealScalar.cpp
+	     ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryFrontEnd.cpp
+	     ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryTimeAdvance.cpp
+	     ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryExtraOutput.cpp
+	     ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryRealScalar.cpp
 	     ${User_FMIPP_SOURCE_DIR}/export/src/FMIComponentFrontEndBase.cpp
 	     ${User_FMIPP_SOURCE_DIR}/export/src/HelperFunctions.cpp
 	     ${User_FMIPP_SOURCE_DIR}/export/src/ScalarVariable.cpp
@@ -95,6 +95,6 @@ add_library( libfmipp_fmu_frontend STATIC
 		 )
 
 # Include directories.
-include_directories( ${User_FMIPP_SOURCE_DIR}/export/examples/powerfactory )
+include_directories( ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory )
 include_directories( ${User_FMIPP_SOURCE_DIR} )
 include_directories( ${User_PFSIM_SOURCE_DIR} )
