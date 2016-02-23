@@ -160,7 +160,7 @@ def generatePowerFactoryFMU(
 
 	# Add description of time advance mechanism.
 	model_description_footer = model_description_footer.replace( '__TIME_ADVANCE_MECHANISM__', time_advance_description )
-	
+
 	# Write footer to file.
 	model_description.write( model_description_footer );
 
@@ -187,6 +187,11 @@ def generatePowerFactoryFMU(
 	build_process = subprocess.Popen( [build_process_batch_file, fmi_model_identifier] )
 	stdout, stderr = build_process.communicate()
 
+	# Check if batch script has executed successfully.
+	if ( False == os.path.isfile( fmu_shared_library_name ) ):
+		print '\n[ERROR] Not able to create shared library (%s).' % fmu_shared_library_name
+		raise Exception( 16 )
+
 	# Check if working directory for FMU creation already exists.
 	if ( True == os.path.isdir( fmi_model_identifier ) ):
 		shutil.rmtree( fmi_model_identifier, False )
@@ -203,7 +208,6 @@ def generatePowerFactoryFMU(
 	for file_name in optional_files: # Additional files.
 		shutil.copy( file_name, fmi_model_identifier )
 	shutil.copy( fmu_shared_library_name, binaries_dir ) # FMU DLL.
-
 
 	# Create ZIP archive.
 	if ( True == os.path.isfile( fmi_model_identifier + '.zip' ) ):

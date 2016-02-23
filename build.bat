@@ -26,13 +26,13 @@ REM Setup command line tools from Visual Studio 2010.
 CALL "%VS100COMNTOOLS%vsvars32.bat" >> %LOG_FILE%
 
 REM Define FMI export functions implementation file.
-SET FMI_FUNCTIONS_IMPLEMENTATION=%~DP0\sources\export\functions\fmiFunctions.cpp
+SET FMI_FUNCTIONS_IMPLEMENTATION="%~DP0\sources\export\functions\fmiFunctions.cpp"
 
 REM Define include flags for CL.
-SET INCLUDE_FLAGS=/I%~DP0\sources /I%~DP0\sources\export\tools\powerfactory
+SET INCLUDE_FLAGS=/I"%~DP0\sources" /I"%~DP0\sources\export\tools\powerfactory"
 
 REM Define library path for CL.
-SET LIBRARY_PATH=%~DP0\binaries
+SET LIBRARY_PATH="%~DP0\binaries"
 
 REM Compile FMI front end component with correct model identifier.
 CL /c %INCLUDE_FLAGS% /nologo /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D _WINDOWS /D NDEBUG /D MODEL_IDENTIFIER=%MODEL_IDENTFIER% /D FRONT_END_TYPE=PowerFactoryFrontEnd /D "FRONT_END_TYPE_INCLUDE=\"PowerFactoryFrontEnd.h\"" /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Gd /TP /analyze- /errorReport:queue %FMI_FUNCTIONS_IMPLEMENTATION% >> %LOG_FILE%
