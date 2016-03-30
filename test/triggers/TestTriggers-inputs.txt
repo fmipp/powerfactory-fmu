@@ -1,1 +1,3 @@
-ElmLod.Load.plini
+; this list defines the inputs of the FMU
+
+ElmLod.Load.plini	; comments can be added like this ...

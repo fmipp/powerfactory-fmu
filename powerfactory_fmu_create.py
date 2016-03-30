@@ -272,6 +272,31 @@ def variableNameIsValid( var_name ):
 	# All checks successful, return True.
 	return True
 
+
+# Helper function. Retrieve labels from file. The file is expected to
+# have one entry per line, comment lines start with a semicolon (;).
+def retrieveLabelsFromFile( file_name, labels ):
+	input_file = open( file_name, 'r' ) # Open the file.
+	while True:
+		line = input_file.readline() # Read next line.
+		if not line: break # End of file.
+
+		line = line.strip(' "\'\n\t') # Strip all leading and trailing whitespaces etc.
+
+		semicolon_position = line.find( ';' ) # Check for comments.
+		if ( 0 == semicolon_position ):
+			continue # Comment line.
+		elif ( -1 != semicolon_position ):
+			line = line[0:semicolon_position].strip(' "\'\n\t') # Remove comment from line
+
+		if 0 != len( line ):
+			if ( variableNameIsValid( line ) ):
+				labels.append( line ) # Append line to list of labels.
+			else:
+				print '\n[ERROR]', line, 'is not a valid variable name'
+				sys.exit(8)
+
+
 # Main function.
 if __name__ == "__main__":
 
@@ -383,8 +408,8 @@ if __name__ == "__main__":
 	for item in extra:
 		if "=" in item:
 			start_value_pair = item.split( '=' )
-			varname = start_value_pair[0].strip(' "\n')
-			value = start_value_pair[1].strip(' "\n')
+			varname = start_value_pair[0].strip(' "\n\t')
+			value = start_value_pair[1].strip(' "\n\t')
 			if ( True == verbose ): print '[DEBUG] Found start value:', varname, '=', value
 			start_values[varname] = value;
 		elif ( True == os.path.isfile( item ) ): # Check if this is an additional input file.
@@ -413,16 +438,8 @@ if __name__ == "__main__":
 
 	# Parse file to retrieve FMI input variable names.
 	if ( None != input_var_file_name ):
-		input_var_file = open( input_var_file_name, 'r' )
-		while True:
-			line = input_var_file.readline()
-			if not line: break
-			var_name = line.strip(' "\n\'')
-			if ( variableNameIsValid( var_name ) ):
-				fmi_input_vars.append( line.strip(' "\n') )
-			else:
-				print '\n[ERROR]', var_name, 'is not a valid variable name'
-				sys.exit(8)
+		retrieveLabelsFromFile( input_var_file_name, fmi_input_vars );
+
 		if ( True == verbose ):
 			print '[DEBUG] FMI input parameters:'
 			for var in fmi_input_vars:
@@ -430,16 +447,8 @@ if __name__ == "__main__":
 
 	# Parse file to retrieve FMI output variable names.
 	if ( None != output_var_file_name ):
-		output_var_file = open( output_var_file_name, 'r' )
-		while True:
-			line = output_var_file.readline()
-			if not line: break
-			var_name = line.strip(' "\n\'')
-			if ( variableNameIsValid( var_name ) ):
-				fmi_output_vars.append( line.strip(' "\n') )
-			else:
-				print '\n[ERROR]', var_name, 'is not a valid variable name'
-				sys.exit(9)
+		retrieveLabelsFromFile( output_var_file_name, fmi_output_vars );
+
 		if ( True == verbose ):
 			print '[DEBUG] FMI output parameters:'
 			for var in fmi_output_vars:
