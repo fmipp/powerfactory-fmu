@@ -52,4 +52,5 @@ if __name__ == "__main__":
         # Install PFSim.
         installPFSim( pf_install_dir )
 
-        print '\nFMI++ PowerFactory FMU Export Utility successfully installed!'
+        print '\nFMI++ PowerFactory FMU Export Utility successfully installed.'
+        print '\nATTENTION: Please do not forget to add PowerFactory\'s installation directory to the Windows path!!!'

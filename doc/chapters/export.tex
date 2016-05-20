@@ -233,3 +233,15 @@ Additional files may be specified that will be automatically copied to the FMU. 
 Furthermore, start values for variables may be defined. For instance, to set a variable with the name \texttt{ElmLod.TestLoad.plini} to a value of 12.34, specify \texttt{ElmLod.TestLoad.plini=12.34} in the command line as optional argument.
 
 Section~\ref{sec:examples:dplscript} gives a concrete example of how to export such a model using a \dplscript as an FMU.
+
+
+\section{Writing additional output}
+\label{sec:export:additional_output}
+
+When using a \pf model within a co-simulation, it is possible to write additional simulation results from \pf that are not specified as FMU outputs.
+To do so, simply add text files with file extension \texttt{.info} as additional files, containing a list of variable names in clear text, listing exactly one valid variable name per line (just like the input input/output variable name lists for creating an FMU).
+For each of these files, a CSV file with the same name (but file extension \texttt{.csv}) will be generated during a simulation run, containing the simulated values of the variables defined in the \texttt{.info} file.
+For instance, adding an additional file called \texttt{extra\_data.info} will at simulation time result in the creation of a file called \texttt{extra\_data.csv}.
+
+\subsubsection*{Note:}
+These \texttt{.info} files have to be specifically specified as additional files when creating an FMU!
