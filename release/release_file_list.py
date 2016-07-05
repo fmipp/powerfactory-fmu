@@ -48,12 +48,12 @@ files_for_release = files_from_fmipp + additional_files
 
 # List of binaries that are not provided by the repository (see also README in 'binaries' subfolder).
 required_binaries = [
-    'binaries\\libboost_chrono-vc100-mt-1_58.lib', # static BOOST Chrono libarary
-    'binaries\\libboost_date_time-vc100-mt-1_58.lib', # static BOOST date-time library
-    'binaries\\libboost_filesystem-vc100-mt-1_58.lib', # static BOOST Filesystem library
-    'binaries\\libboost_regex-vc100-mt-1_58.lib', # static BOOST Regex libarary
-    'binaries\\libboost_system-vc100-mt-1_58.lib', # static BOOST System libarary
-    'binaries\\libboost_thread-vc100-mt-1_58.lib', # static BOOST Thread libarary
+    'binaries\\libboost_chrono-vc120-mt-1_58.lib', # static BOOST Chrono libarary
+    'binaries\\libboost_date_time-vc120-mt-1_58.lib', # static BOOST date-time library
+    'binaries\\libboost_filesystem-vc120-mt-1_58.lib', # static BOOST Filesystem library
+    'binaries\\libboost_regex-vc120-mt-1_58.lib', # static BOOST Regex libarary
+    'binaries\\libboost_system-vc120-mt-1_58.lib', # static BOOST System libarary
+    'binaries\\libboost_thread-vc120-mt-1_58.lib', # static BOOST Thread libarary
     'binaries\\libfmipp_fmu_frontend.lib', # static library containing pre-compiled parts of the front end
     'binaries\\PFSim.lib', # static PFSim wrapper library
     'binaries\\digexdyn.lib', # include library for 'digexdyn.dll'
