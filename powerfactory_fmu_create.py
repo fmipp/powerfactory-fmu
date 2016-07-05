@@ -184,7 +184,7 @@ def generatePowerFactoryFMU(
 	for file_name in glob.glob( fmi_model_identifier + '.*' ):
 		if not ".pfd" in file_name: os.remove( file_name ) # Do not accidentaly remove the deck file!
 	if ( True == os.path.isfile( 'fmiFunctions.obj' ) ): os.remove( 'fmiFunctions.obj' )
-	build_process = subprocess.Popen( [build_process_batch_file, fmi_model_identifier] )
+	build_process = subprocess.Popen( [build_process_batch_file, fmi_model_identifier, pf_install_dir ] )
 	stdout, stderr = build_process.communicate()
 
 	# Check if batch script has executed successfully.

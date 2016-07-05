@@ -4,18 +4,20 @@
 
 The \fmipp \pf FMU Export Utility is intended to run on Windows~7. The following applications need to be installed prior to installing the \fmipp \pf FMU Export Utility:
 \begin{itemize}
-  \item \href{http://www.digsilent.com/}{DIgSILENT~\pf}~15.2.4~(32-bit)
+  \item \href{http://www.digsilent.com/}{DIgSILENT~\pf}~2016~SP2~(32-bit)
   \item \href{https://www.python.org/}{\python} (tested with \python~2.7)
-  \item Microsoft Visual C++ 2010 Express
+  \item \href{https://www.microsoft.com/en-us/download/details.aspx?id=44914}{Microsoft Visual Studio Express 2013}
 \end{itemize}
 
 \subsubsection*{Note:}
-The current version of the \fmipp \pf FMU Export Utility has been specifically compiled to work with \pf version 15.2.4.
+The current version of the \fmipp \pf FMU Export Utility has been specifically compiled to work with \pf 2016 SP2.
 It will definitely fail to run with older versions, newer version might work (but have not been tested).
 
 
 \section{Installation}
 \label{sec:install}
+
+\subsection*{Step~1: Download and extract}
 
 To install the \fmipp \pf FMU Export Utility , proceed as follows:
 \begin{itemize}
@@ -23,12 +25,19 @@ To install the \fmipp \pf FMU Export Utility , proceed as follows:
   \item Unzip the installation file into any sub directory (referred to as the \emph{installation directory}).
 \end{itemize}
 
+\subsection*{Step~2: Running the installation script}
+
 Installation requires to execute \python from the command prompt window, please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this.
 
 Open the command prompt window, change to the installation directory and execute the script \texttt{powerfactory\_fmu\_install.py}:
 \begin{verbatim}
 python.exe powerfactory_fmu_install.py <pf_install_dir>
 \end{verbatim}
-where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf152}).
+where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf2016}).
 
 After successful installation, the \pf installation directory contains two new files, \texttt{digexdyn.dll} and \texttt{digexfun1.dll}.
+
+
+\subsection*{Step~3: Updating the Windows system path}
+
+Finally, the \pf installation directory has to be added to the Windows system path. For instruction on how to do that please refer for instance \href{https://de.mathworks.com/matlabcentral/answers/94933-how-do-i-set-my-system-path-under-windows}{here}.
