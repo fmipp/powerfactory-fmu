@@ -5,6 +5,8 @@
 
 import sys, os, shutil, pickle
 
+# def _print( *arg ): print ' '.join( map( str, arg ) )
+def _print( *arg ): print( ' '.join( map( str, arg ) ) )
 
 def savePowerFactoryInstallDir( pf_install_dir ):
         # Save name of install directory to file (used by script 'powerfactory_fmu_create.py').
@@ -17,13 +19,13 @@ def installPFSim( pf_install_dir ):
         # Check if file binaries\digexdyn.dll exists.
         digexdyn_file_name = os.path.join( 'binaries', 'digexdyn.dll' )
         if ( False == os.path.isfile( digexdyn_file_name ) ):
-                print '\nERROR: file', digexdyn_file_name, 'not found'
+                _print( '\nERROR: file', digexdyn_file_name, 'not found' )
                 sys.exit()
 
         # Check if file binaries\digexdyn.dll exists.
         digexfun1_file_name = os.path.join( 'binaries', 'digexfun1.dll' )
         if ( False == os.path.isfile( digexfun1_file_name ) ):
-                print '\nERROR: file', digexfun1_file_name, 'not found'
+                _print( '\nERROR: file', digexfun1_file_name, 'not found' )
                 sys.exit()
 
         # Copy digexdyn.dll and digexfun1.dll to PowerFactory installation directory
@@ -35,8 +37,8 @@ if __name__ == "__main__":
         
         # Check for correct number of input parameters.
         if( 2 != len( sys.argv ) ):
-                print '\nERROR: Wrong number of arguments!'
-                print '\nUsage:\n\n\tpython powerfactory_fmu_install.py <powerfactory_install_directory>\n'
+                _print( '\nERROR: Wrong number of arguments!' )
+                _print( '\nUsage:\n\n\tpython powerfactory_fmu_install.py <powerfactory_install_directory>\n' )
                 sys.exit()
 
         # Set PowerFactory installation directory.
@@ -44,7 +46,7 @@ if __name__ == "__main__":
         
         # Check if directory exists.
         if( False == os.path.isdir( pf_install_dir ) ):
-                print '\nERROR:', pf_install_dir, 'is not a valid directory'
+                _print( '\nWARNING:', pf_install_dir, 'is not a valid directory' )
 	
         # Save name of install directory to file (used by script 'powerfactory_fmu_create.py').
         savePowerFactoryInstallDir( pf_install_dir )
@@ -52,5 +54,5 @@ if __name__ == "__main__":
         # Install PFSim.
         installPFSim( pf_install_dir )
 
-        print '\nFMI++ PowerFactory FMU Export Utility successfully installed.'
-        print '\nATTENTION: Please do not forget to add PowerFactory\'s installation directory to the Windows path!!!'
+        _print( '\nFMI++ PowerFactory FMU Export Utility successfully installed.' )
+        _print( '\nATTENTION: Please do not forget to add PowerFactory\'s installation directory to the Windows path!!!' )

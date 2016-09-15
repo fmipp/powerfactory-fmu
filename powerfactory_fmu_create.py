@@ -3,7 +3,13 @@
 # All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
 # -----------------------------------------------------------------------
 
-import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
+### Python 2
+# import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
+# def _print( *arg ): print ' '.join( map( str, arg ) )
+
+### Python 3
+import sys, os, shutil, time, getpass, uuid, urllib.parse, urllib, getopt, pickle, subprocess, glob
+def _print( *arg ): print( ' '.join( map( str, arg ) ) )
 
 
 # Helper function.
@@ -88,7 +94,7 @@ def generatePowerFactoryFMU(
 		if var in start_values:
 			start_value_description = ' start=\"' + start_values[var] + '\"'
 			scalar_variable_description = scalar_variable_description.replace( '__START_VALUE__', start_value_description )
-			if ( True == verbose ): print '[DEBUG] Added start value to model description: ', var, '=', start_values[var]
+			if ( True == verbose ): _print( '[DEBUG] Added start value to model description: ', var, '=', start_values[var] )
 		else:
 			scalar_variable_description = scalar_variable_description.replace( '__START_VALUE__', '' )
 		input_val_ref += 1
@@ -105,7 +111,7 @@ def generatePowerFactoryFMU(
 		if var in start_values:
 			start_value_description = ' start=\"' + start_values[var] + '\"'
 			scalar_variable_description = scalar_variable_description.replace( '__START_VALUE__', start_value_description )
-			if ( True == verbose ): print '[DEBUG] Added start value to model description: ', var, '=', start_values[var]
+			if ( True == verbose ): _print( '[DEBUG] Added start value to model description: ', var, '=', start_values[var] )
 		else:
 			scalar_variable_description = scalar_variable_description.replace( '__START_VALUE__', '' )
 		output_val_ref += 1
@@ -126,7 +132,7 @@ def generatePowerFactoryFMU(
 		additional_files_description = ''
 		for file_name in optional_files:
 			additional_files_description += '\n\t\t\t\t<File file=\"fmu://' + os.path.basename( file_name ) + '\"/>'
-			if ( True == verbose ): print '[DEBUG] Added additional file to model description: ', os.path.basename( file_name )
+			if ( True == verbose ): _print( '[DEBUG] Added additional file to model description: ', os.path.basename( file_name ) )
 		additional_files_description += '\n\t\t\t'
 		model_description_footer = model_description_footer.replace( '__ADDITIONAL_FILES__', additional_files_description )
 
@@ -141,7 +147,7 @@ def generatePowerFactoryFMU(
 			if ( ( 2 != len( labels ) ) or
 			     ( 0 == min_label_size ) or
 			     ( False == is_float( labels[1] ) ) ):
-				print '\n[ERROR] A trigger for simulation time advance needs to be defined in the form \"<name>:<scale>\".'
+				_print( '\n[ERROR] A trigger for simulation time advance needs to be defined in the form \"<name>:<scale>\".' )
 				raise Exception( 13 )
 			time_advance_description += '<Trigger name="' + labels[0] + '" scale="' + labels[1] + '"/>'
 
@@ -154,7 +160,7 @@ def generatePowerFactoryFMU(
 			 ( 0 == min_label_size ) or
 			 ( False == is_float( labels[1] ) ) or
 			 ( False == is_float( labels[2] ) ) ):
-			print '\n[ERROR] A DPL script for simulation time advance needs to be defined in the form \"<name>:<scale>:<offset>\".'
+			_print( '\n[ERROR] A DPL script for simulation time advance needs to be defined in the form \"<name>:<scale>:<offset>\".' )
 			raise Exception( 14 )
 		time_advance_description += '<DPLScript name="' + labels[0] + '" scale="' + labels[1] + '" offset="' + labels[2] + '"/>'
 
@@ -177,7 +183,7 @@ def generatePowerFactoryFMU(
 	# Check if batch file for build process exists.
 	build_process_batch_file = pf_fmu_root_dir + '\\build.bat'
 	if ( False == os.path.isfile( build_process_batch_file ) ):
-		print '\n[ERROR] Could not find file', build_process_batch_file
+		_print( '\n[ERROR] Could not find file', build_process_batch_file )
 		raise Exception( 15 )
 
 	# Compile FMU shared library.
@@ -189,7 +195,7 @@ def generatePowerFactoryFMU(
 
 	# Check if batch script has executed successfully.
 	if ( False == os.path.isfile( fmu_shared_library_name ) ):
-		print '\n[ERROR] Not able to create shared library (%s).' % fmu_shared_library_name
+		_print( '\n[ERROR] Not able to create shared library:', fmu_shared_library_name )
 		raise Exception( 16 )
 
 	# Check if working directory for FMU creation already exists.
@@ -232,26 +238,26 @@ def generatePowerFactoryFMU(
 # Helper function.
 def usage():
 	"""Print the usage of this script when used as main program."""
-	print '\nABOUT:'
-	print 'This script generates FMUs for Co-Simulation (tool coupling) from PowerFactory'
-	print '\nUSAGE:'
-	print 'python powerfactory_fmu_create.py [-h] [-v] [-d pf_install_dir] -m model_id -p pfd_file [-i input_var_file] [-o output_var_file] [-t name:scale] [-s name:scale:offset] [additional_file_1 ... additional_file_N] [var1=start_val1 ... varN=start_valN]'
-	print '\nREQUIRED ARGUMENTS:'
-	print '-m, --model-id=\t\tspecify FMU model identifier'
-	print '-p, --pfd-file=\tpath to PowerFactory PFD file'
-	print '\nOPTIONAL ARGUMENTS:'
-	print '-i, --input-var-file=\tspecify file containing list of input variable names'
-	print '-o, --output-var-file=\tspecify file containing list of output variable names'
-	print '-t, --trigger=\t\tspecify a trigger for advancing simulation time'
-	print '-s, --dpl-script=\tspecify a DPL-script for advancing simulation time'
-	print '-h, --help\t\tdisplay this information'
-	print '-v, --verbose\t\tturn on log messages'
-	print '-l, --litter\t\tdo not clean-up intermediate files'
-	print '-d, --pf-install-dir=\tpath to PowerFactory installation directory'
-	print '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>".'
-	print '\nTriggers for simulation time advance need to be defined in the form \"<name>:<scale>\". The name has to be given according to the trigger\'s object name in the PFD file. Times given to the FMU are interpreted as seconds, therefore the scale can be adjusted to match the trigger\'s internal unit of time (e.g., 60 for minutes or 3600 for hours). Multiple triggers may be defined. Alternatively, a single DPL script may be specified to advance simulation time in the form \"<name>:<scale>:<offset>\".'
-	print '\nAdditional files may be specified (e.g., CSV load profiles or extra output definition files) that will be automatically copied to the FMU.'
-	print '\nStart values for variables may be defined. For instance, to set variable with name \"var1\" to value 12.34, specifiy \"var1=12.34\" in the command line as optional argument.'
+	_print( '\nABOUT:' )
+	_print( 'This script generates FMUs for Co-Simulation (tool coupling) from PowerFactory' )
+	_print( '\nUSAGE:' )
+	_print( 'python powerfactory_fmu_create.py [-h] [-v] [-d pf_install_dir] -m model_id -p pfd_file [-i input_var_file] [-o output_var_file] [-t name:scale] [-s name:scale:offset] [additional_file_1 ... additional_file_N] [var1=start_val1 ... varN=start_valN]' )
+	_print( '\nREQUIRED ARGUMENTS:' )
+	_print( '-m, --model-id=\t\tspecify FMU model identifier' )
+	_print( '-p, --pfd-file=\tpath to PowerFactory PFD file' )
+	_print( '\nOPTIONAL ARGUMENTS:' )
+	_print( '-i, --input-var-file=\tspecify file containing list of input variable names' )
+	_print( '-o, --output-var-file=\tspecify file containing list of output variable names' )
+	_print( '-t, --trigger=\t\tspecify a trigger for advancing simulation time' )
+	_print( '-s, --dpl-script=\tspecify a DPL-script for advancing simulation time' )
+	_print( '-h, --help\t\tdisplay this information' )
+	_print( '-v, --verbose\t\tturn on log messages' )
+	_print( '-l, --litter\t\tdo not clean-up intermediate files' )
+	_print( '-d, --pf-install-dir=\tpath to PowerFactory installation directory' )
+	_print( '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>".' )
+	_print( '\nTriggers for simulation time advance need to be defined in the form \"<name>:<scale>\". The name has to be given according to the trigger\'s object name in the PFD file. Times given to the FMU are interpreted as seconds, therefore the scale can be adjusted to match the trigger\'s internal unit of time (e.g., 60 for minutes or 3600 for hours). Multiple triggers may be defined. Alternatively, a single DPL script may be specified to advance simulation time in the form \"<name>:<scale>:<offset>\".' )
+	_print( '\nAdditional files may be specified (e.g., CSV load profiles or extra output definition files) that will be automatically copied to the FMU.' )
+	_print( '\nStart values for variables may be defined. For instance, to set variable with name \"var1\" to value 12.34, specifiy \"var1=12.34\" in the command line as optional argument.' )
 
 
 # Helper function.
@@ -293,7 +299,7 @@ def retrieveLabelsFromFile( file_name, labels ):
 			if ( variableNameIsValid( line ) ):
 				labels.append( line ) # Append line to list of labels.
 			else:
-				print '\n[ERROR]', line, 'is not a valid variable name'
+				_print( '\n[ERROR]', line, 'is not a valid variable name' )
 				sys.exit(8)
 
 
@@ -342,7 +348,7 @@ if __name__ == "__main__":
 		options_definition_long = [ "verbose", "help", "litter", "model-id=", 'pfd-file=', 'input-var-file=', 'output-var-file=', 'pf-install-dir=', 'trigger=', 'dpl-script' ]
 		options, extra = getopt.getopt( sys.argv[1:], options_definition_short, options_definition_long )
 	except getopt.GetoptError as err:
-		print str( err )
+		_print( str( err ) )
 		usage()
 		sys.exit(1)
 
@@ -372,35 +378,35 @@ if __name__ == "__main__":
 
 	# Check if FMI model identifier has been specified.
 	if ( None == fmi_model_identifier ):
-		print '\n[ERROR] No FMU model identifier specified!'
+		_print( '\n[ERROR] No FMU model identifier specified!' )
 		usage()
 		sys.exit(2)
 
 	# Check if PowerFactory deck file has been specified.
 	if ( None == pfd_file_name ):
-		print '\n[ERROR] No PowerFactory PFD file specified!'
+		_print( '\n[ERROR] No PowerFactory PFD file specified!' )
 		usage()
 		sys.exit(3)
 	elif ( False == os.path.isfile( pfd_file_name ) ): # Check if specified PFD file is valid.
-		print '\n[ERROR] Invalid PowerFactory PFD file:', pfd_file_name
+		_print( '\n[ERROR] Invalid PowerFactory PFD file:', pfd_file_name )
 		usage()
 		sys.exit(4)
         
 	# No PowerFactory install directory provided -> read from file (created by script 'powerfactory_fmu_install.py').
 	if ( None == pf_install_dir ):
-                pkl_file_name = pf_fmu_root_dir + '\\powerfactory_fmu_install.pkl'
+		pkl_file_name = pf_fmu_root_dir + '\\powerfactory_fmu_install.pkl'
 		if ( True == os.path.isfile( pkl_file_name ) ):
 			pkl_file = open( pkl_file_name, 'rb' )
 			pf_install_dir = pickle.load( pkl_file )
 			pkl_file.close()
 		else:
-			print '\n[ERROR] Please re-run script \'powerfactory_fmu_install.py\' or provide PowerFactory install directory via command line option -d (--pf-install-dir)!'
+			_print( '\n[ERROR] Please re-run script \'powerfactory_fmu_install.py\' or provide PowerFactory install directory via command line option -d (--pf-install-dir)!' )
 			usage()
 			sys.exit(5)
 
 	# Check if specified PowerFactory install directory exists.
 	if ( False == os.path.isdir( pf_install_dir ) ):
-		print '\n[ERROR] Invalid PowerFactory install directory:', pf_install_dir
+		_print( '\n[ERROR] Invalid PowerFactory install directory:', pf_install_dir )
 		usage()
 		sys.exit(6)
 
@@ -410,27 +416,27 @@ if __name__ == "__main__":
 			start_value_pair = item.split( '=' )
 			varname = start_value_pair[0].strip(' "\n\t')
 			value = start_value_pair[1].strip(' "\n\t')
-			if ( True == verbose ): print '[DEBUG] Found start value:', varname, '=', value
+			if ( True == verbose ): _print( '[DEBUG] Found start value:', varname, '=', value )
 			start_values[varname] = value;
 		elif ( True == os.path.isfile( item ) ): # Check if this is an additional input file.
 			optional_files.append( item )
-			if ( True == verbose ): print '[DEBUG] Found additional file:', item
+			if ( True == verbose ): _print( '[DEBUG] Found additional file:', item )
 		else:
-			print '\n[ERROR] Invalid input argument:', item
+			_print( '\n[ERROR] Invalid input argument:', item )
 			usage()
 			sys.exit(7)
 
 	if ( True == verbose ):
-		print '[DEBUG] FMI model identifier:', fmi_model_identifier
-		print '[DEBUG] PowerFactory PFD file:', pfd_file_name 
-		print '[DEBUG] PowerFactory install directory:', pf_install_dir
-		print '[DEBUG] Aditional files:'
+		_print( '[DEBUG] FMI model identifier:', fmi_model_identifier )
+		_print( '[DEBUG] PowerFactory PFD file:', pfd_file_name )
+		_print( '[DEBUG] PowerFactory install directory:', pf_install_dir )
+		_print( '[DEBUG] Aditional files:' )
 		for file_name in optional_files:
-			print '\t', file_name
+			_print( '\t', file_name )
 
 	# Issue a warning in case no files contining input/outout variable name list have been specified.
 	if ( ( None == input_var_file_name ) and ( None == output_var_file_name ) ):
-		print '[WARNING] Neither input nor output variable names specified!'
+		_print( '[WARNING] Neither input nor output variable names specified!' )
 
 	# Lists containing the FMI input and output variable names.
 	fmi_input_vars = []
@@ -441,28 +447,28 @@ if __name__ == "__main__":
 		retrieveLabelsFromFile( input_var_file_name, fmi_input_vars );
 
 		if ( True == verbose ):
-			print '[DEBUG] FMI input parameters:'
+			_print( '[DEBUG] FMI input parameters:' )
 			for var in fmi_input_vars:
-				print '\t', var
+				_print( '\t', var )
 
 	# Parse file to retrieve FMI output variable names.
 	if ( None != output_var_file_name ):
 		retrieveLabelsFromFile( output_var_file_name, fmi_output_vars );
 
 		if ( True == verbose ):
-			print '[DEBUG] FMI output parameters:'
+			_print( '[DEBUG] FMI output parameters:' )
 			for var in fmi_output_vars:
-				print '\t', var
+				_print( '\t', var )
 
 	# Check options for time advance mechanism.
 	if ( ( 0 == len( dpl_script ) ) and ( 0 == len( triggers ) ) ):
-		print '\n[ERROR] no mechanism for time advance specified'
+		_print( '\n[ERROR] no mechanism for time advance specified' )
 		sys.exit(10)
 	elif ( ( 0 != len( dpl_script ) ) and ( 0 != len( triggers ) ) ):
-		print '\n[ERROR] Mixing of mechanisms for time advance (triggers and DPL scripts) is not supported!'
+		_print( '\n[ERROR] Mixing of mechanisms for time advance (triggers and DPL scripts) is not supported!' )
 		sys.exit(11)
 	elif ( 1 < len( dpl_script ) ):
-		print '\n[ERROR] Defintion of more than one DPL script for simulation time advance is not supported!'
+		_print( '\n[ERROR] Defintion of more than one DPL script for simulation time advance is not supported!' )
 		sys.exit(12)
 	
 	# Generate FMU.
@@ -481,4 +487,4 @@ if __name__ == "__main__":
 	except Exception as e:
 		sys.exit( e.args[0] )
 	
-	if ( True == verbose ): print "[DEBUG] FMU created successfully!"
+	if ( True == verbose ): _print( "[DEBUG] FMU created successfully!" )
