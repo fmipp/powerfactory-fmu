@@ -406,9 +406,9 @@ if __name__ == "__main__":
 
 	# Check if specified PowerFactory install directory exists.
 	if ( False == os.path.isdir( pf_install_dir ) ):
-		_print( '\n[ERROR] Invalid PowerFactory install directory:', pf_install_dir )
-		usage()
-		sys.exit(6)
+		_print( '\n[WARNING] Invalid PowerFactory install directory:', pf_install_dir )
+		# usage()
+		# sys.exit(6)
 
 	# Retrieve additional files from command line arguments.
 	for item in extra:
