@@ -26,6 +26,7 @@ def generatePowerFactoryFMU(
 		pf_install_dir,
 		triggers,
 		dpl_script,
+		rms_sim,
 		fmi_input_vars,
 		fmi_output_vars,
 		start_values,
@@ -37,8 +38,9 @@ def generatePowerFactoryFMU(
 	fmi_model_identifier -- FMI model identfier for FMU (string)
 	pfd_file_name -- name of PFD file (string)
 	pf_install_dir -- PowerFactory installation directory (string)
-	triggers -- definition of triggers for simulation time advance(list of strings)
-	dpl_script -- definition of DPL script for simulation time advance(list of strings)
+	triggers -- definition of triggers for simulation time advance (list of strings)
+	dpl_script -- definition of DPL script for simulation time advance (list of strings)
+	rms_sim -- RMS simulation setup (list of strings)
 	fmi_input_vars -- definition of input variable names (list of strings)
 	fmi_output_vars -- definition of output variable names (list of strings)
 	start_values -- definition of start values (map of strings to strings)
@@ -148,7 +150,7 @@ def generatePowerFactoryFMU(
 			     ( 0 == min_label_size ) or
 			     ( False == is_float( labels[1] ) ) ):
 				_print( '\n[ERROR] A trigger for simulation time advance needs to be defined in the form \"<name>:<scale>\".' )
-				raise Exception( 13 )
+				raise Exception( 14 )
 			time_advance_description += '<Trigger name="' + labels[0] + '" scale="' + labels[1] + '"/>'
 
 	# Time advance mechanism via DPL script.
@@ -161,8 +163,17 @@ def generatePowerFactoryFMU(
 			 ( False == is_float( labels[1] ) ) or
 			 ( False == is_float( labels[2] ) ) ):
 			_print( '\n[ERROR] A DPL script for simulation time advance needs to be defined in the form \"<name>:<scale>:<offset>\".' )
-			raise Exception( 14 )
+			raise Exception( 15 )
 		time_advance_description += '<DPLScript name="' + labels[0] + '" scale="' + labels[1] + '" offset="' + labels[2] + '"/>'
+
+	# RMS simulation setup.
+	if ( 0 != len( rms_sim ) ):
+		# Defintion of more than one RMS simulation setup not supported (see above)!
+		stepsize = rms_sim[0]
+		if ( False == is_float( stepsize ) ):
+			_print( '\n[ERROR] A RMS simulation setup needs to define the integrator step size (in seconds).' )
+			raise Exception( 16 )
+		time_advance_description += '<RMSSimulation stepsize="' + stepsize + '"/>'
 
 	# Add description of time advance mechanism.
 	model_description_footer = model_description_footer.replace( '__TIME_ADVANCE_MECHANISM__', time_advance_description )
@@ -184,7 +195,7 @@ def generatePowerFactoryFMU(
 	build_process_batch_file = pf_fmu_root_dir + '\\build.bat'
 	if ( False == os.path.isfile( build_process_batch_file ) ):
 		_print( '\n[ERROR] Could not find file', build_process_batch_file )
-		raise Exception( 15 )
+		raise Exception( 17 )
 
 	# Compile FMU shared library.
 	for file_name in glob.glob( fmi_model_identifier + '.*' ):
@@ -196,7 +207,7 @@ def generatePowerFactoryFMU(
 	# Check if batch script has executed successfully.
 	if ( False == os.path.isfile( fmu_shared_library_name ) ):
 		_print( '\n[ERROR] Not able to create shared library:', fmu_shared_library_name )
-		raise Exception( 16 )
+		raise Exception( 18 )
 
 	# Check if working directory for FMU creation already exists.
 	if ( True == os.path.isdir( fmi_model_identifier ) ):
@@ -219,12 +230,12 @@ def generatePowerFactoryFMU(
 	if ( True == os.path.isfile( fmi_model_identifier + '.zip' ) ):
 		os.remove( fmi_model_identifier + '.zip' )
 	shutil.make_archive( fmi_model_identifier, 'zip', fmi_model_identifier )
-
+	
 	# Finally, create the FMU!!!
 	if ( True == os.path.isfile( fmi_model_identifier + '.fmu' ) ):
 		os.remove( fmi_model_identifier + '.fmu' )
 	os.rename( fmi_model_identifier + '.zip', fmi_model_identifier + '.fmu' )
-
+	
 	# Clean up.
 	if ( False == litter ):
 		os.remove( model_description_name )
@@ -250,12 +261,13 @@ def usage():
 	_print( '-o, --output-var-file=\tspecify file containing list of output variable names' )
 	_print( '-t, --trigger=\t\tspecify a trigger for advancing simulation time' )
 	_print( '-s, --dpl-script=\tspecify a DPL-script for advancing simulation time' )
+	_print( '-r, --rms-sim=\tspecify a RMS simulation setup' )
 	_print( '-h, --help\t\tdisplay this information' )
 	_print( '-v, --verbose\t\tturn on log messages' )
 	_print( '-l, --litter\t\tdo not clean-up intermediate files' )
 	_print( '-d, --pf-install-dir=\tpath to PowerFactory installation directory' )
-	_print( '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>".' )
-	_print( '\nTriggers for simulation time advance need to be defined in the form \"<name>:<scale>\". The name has to be given according to the trigger\'s object name in the PFD file. Times given to the FMU are interpreted as seconds, therefore the scale can be adjusted to match the trigger\'s internal unit of time (e.g., 60 for minutes or 3600 for hours). Multiple triggers may be defined. Alternatively, a single DPL script may be specified to advance simulation time in the form \"<name>:<scale>:<offset>\".' )
+	_print( '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>". For RMS simulations, input events have to be specified in the form \"FMIEvent.<parameter-name>\".' )
+	_print( '\nTriggers for simulation time advance need to be defined in the form \"<name>:<scale>\". The name has to be given according to the trigger\'s object name in the PFD file. Times given to the FMU are interpreted as seconds, therefore the scale can be adjusted to match the trigger\'s internal unit of time (e.g., 60 for minutes or 3600 for hours). Multiple triggers may be defined. Alternatively, a single DPL script may be specified to advance simulation time in the form \"<name>:<scale>:<offset>\". For RMS simulations, only the integrator step size (in seconds) has to be specified.' )
 	_print( '\nAdditional files may be specified (e.g., CSV load profiles or extra output definition files) that will be automatically copied to the FMU.' )
 	_print( '\nStart values for variables may be defined. For instance, to set variable with name \"var1\" to value 12.34, specifiy \"var1=12.34\" in the command line as optional argument.' )
 
@@ -267,12 +279,12 @@ def variableNameIsValid( var_name ):
 	"""
 	# Split the variable name using the '.' as seperator.
 	labels = var_name.split( '.' )
-	# Check if the variable consists of three labels.
-	if ( 3 != len( labels ) ): return False
+	# Check if the variable consists of two (RMS input events) or three labels.
+	if ( ( 3 != len( labels ) ) and ( 2 != len( labels ) ) ): return False
 	# Check if there is no empty label.
 	if ( 0 == min( map( len, labels ) ) ): return False
-	# The parameter name may contain ':' as separators.
-	sublabels = labels[2].split( ':' )
+	# The last label (parameter name) may contain ':' as separators.
+	sublabels = labels[len(labels)-1].split( ':' )
 	# Check if the sublabels of the parameter name are valid.
 	if ( 0 == min( map( len, sublabels ) ) ): return False
 	# All checks successful, return True.
@@ -342,10 +354,13 @@ if __name__ == "__main__":
 	# DPL script (for simulation time advance).
 	dpl_script = []
 
+	# RMS simulation setup.
+	rms_sim = []
+
 	# Parse command line arguments.
 	try:
-		options_definition_short = "vhlm:p:i:o:d:t:s:"
-		options_definition_long = [ "verbose", "help", "litter", "model-id=", 'pfd-file=', 'input-var-file=', 'output-var-file=', 'pf-install-dir=', 'trigger=', 'dpl-script' ]
+		options_definition_short = "vhlm:p:i:o:d:t:s:r:"
+		options_definition_long = [ "verbose", "help", "litter", "model-id=", 'pfd-file=', 'input-var-file=', 'output-var-file=', 'pf-install-dir=', 'trigger=', 'dpl-script=', "rms-sim=" ]
 		options, extra = getopt.getopt( sys.argv[1:], options_definition_short, options_definition_long )
 	except getopt.GetoptError as err:
 		_print( str( err ) )
@@ -373,8 +388,10 @@ if __name__ == "__main__":
 			litter = True
 		elif opt in ( '-t', '--trigger' ):
 			triggers.append( arg )
-		elif opt in ( '-s', '--scripts' ):
+		elif opt in ( '-s', '--dpl-script' ):
 			dpl_script.append( arg )
+		elif opt in ( '-r', '--rms-sim' ):
+			rms_sim.append( arg )
 
 	# Check if FMI model identifier has been specified.
 	if ( None == fmi_model_identifier ):
@@ -461,7 +478,7 @@ if __name__ == "__main__":
 				_print( '\t', var )
 
 	# Check options for time advance mechanism.
-	if ( ( 0 == len( dpl_script ) ) and ( 0 == len( triggers ) ) ):
+	if ( ( 0 == len( dpl_script ) ) and ( 0 == len( triggers ) ) and ( 0 == len( rms_sim ) ) ):
 		_print( '\n[ERROR] no mechanism for time advance specified' )
 		sys.exit(10)
 	elif ( ( 0 != len( dpl_script ) ) and ( 0 != len( triggers ) ) ):
@@ -470,6 +487,9 @@ if __name__ == "__main__":
 	elif ( 1 < len( dpl_script ) ):
 		_print( '\n[ERROR] Defintion of more than one DPL script for simulation time advance is not supported!' )
 		sys.exit(12)
+	elif ( 1 < len( rms_sim ) ):
+		_print( '\n[ERROR] Defintion of more than one RMS simulation setup is not supported!' )
+		sys.exit(13)
 	
 	# Generate FMU.
 	try:
@@ -479,6 +499,7 @@ if __name__ == "__main__":
 			pf_install_dir,
 			triggers,
 			dpl_script,
+			rms_sim,
 			fmi_input_vars,
 			fmi_output_vars,
 			start_values,

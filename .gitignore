@@ -1,15 +1,12 @@
 # ignore binaries
-binaries/PFSim.lib
-binaries/digexdyn.lib
-binaries/digexdyn.dll
-binaries/digexfun1.lib
-binaries/digexfun1.dll
-binaries/libboost_chrono-vc100-mt-1_58.lib
-binaries/libboost_date_time-vc100-mt-1_58.lib
-binaries/libboost_filesystem-vc100-mt-1_58.lib
-binaries/libboost_regex-vc100-mt-1_58.lib
-binaries/libboost_system-vc100-mt-1_58.lib
-binaries/libboost_thread-vc100-mt-1_58.lib
+binaries/digexdyn.*
+binaries/FMIEventTrigger.*
+binaries/libboost_chrono-vc120-mt-1_58.lib
+binaries/libboost_date_time-vc120-mt-1_58.lib
+binaries/libboost_filesystem-vc120-mt-1_58.lib
+binaries/libboost_regex-vc120-mt-1_58.lib
+binaries/libboost_system-vc120-mt-1_58.lib
+binaries/libboost_thread-vc120-mt-1_58.lib
 binaries/libfmipp_fmu_frontend.lib
 
 # ignore FMUs for testing
@@ -42,3 +39,5 @@ release/Win32
 release/ZERO_CHECK.*
 release/cmake_install.cmake
 release/libfmipp_fmu_frontend.*
+release/digexdyn.*
+release/FMIEventTrigger.*

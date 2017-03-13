@@ -1,4 +1,4 @@
-; this list defines the inputs of the FMU
+; this list defines the outputs of the FMU
 
 ElmTerm.Node.m:u				; comments can be added like this ...
 ElmLod.Generation.m:Psum:bus1	; another comment

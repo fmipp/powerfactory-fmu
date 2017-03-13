@@ -17,8 +17,10 @@ files_from_fmipp = [
     'sources\\common\\FMIType.h',
     'sources\\common\\fmi_v1.0\\fmi_cs.h',
     'sources\\common\\fmi_v1.0\\fmiModelTypes.h',
-    'sources\\export\\functions\\fmiFunctions.cpp',
-    'sources\\export\\functions\\fmiFunctions.h',
+    'sources\\common\\fmi_v2.0\\fmi_2.h',
+    'sources\\common\\fmi_v2.0\\fmi2ModelTypes.h',
+    'sources\\export\\functions\\fmi_v1.0\\fmiFunctions.cpp',
+    'sources\\export\\functions\\fmi_v1.0\\fmiFunctions.h',
     'sources\\export\\include\\FMIComponentFrontEndBase.h',
     'sources\\export\\tools\\powerfactory\\PowerFactoryFrontEnd.h'
 ]
@@ -55,11 +57,9 @@ required_binaries = [
     'binaries\\libboost_system-vc120-mt-1_58.lib', # static BOOST System libarary
     'binaries\\libboost_thread-vc120-mt-1_58.lib', # static BOOST Thread libarary
     'binaries\\libfmipp_fmu_frontend.lib', # static library containing pre-compiled parts of the front end
-    'binaries\\PFSim.lib', # static PFSim wrapper library
     'binaries\\digexdyn.lib', # include library for 'digexdyn.dll'
-    'binaries\\digexdyn.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf152)
-    'binaries\\digexfun1.lib', # include library for 'digexfun1.dll'
-    'binaries\\digexfun1.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf152)
+    'binaries\\digexdyn.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
+    'binaries\\FMIEventTrigger.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
 ]
 
 # The compiled documentation in PDF format (not part of the repository).

@@ -1,0 +1,3 @@
+; this list defines the inputs of the FMU
+
+FMIEvent.Pext1	; comments can be added like this ...
