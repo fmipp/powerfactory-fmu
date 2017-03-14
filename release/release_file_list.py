@@ -34,6 +34,7 @@ additional_files = [
     'license\\BOOST_SOFTWARE_LICENSE.txt',
     'license\\FMIPP_LICENSE.txt',
     'license\\POWERFACTORY_FMU_LICENSE.txt',
+    'release\\CMakeLists.txt',
     'test\\dplscript\\README.txt',
     'test\\dplscript\\TestDPLScript.pfd',
     'test\\dplscript\\TestDPLScript-inputs.txt',
