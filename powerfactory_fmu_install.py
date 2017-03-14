@@ -65,7 +65,7 @@ if __name__ == "__main__":
         # Install PFSim.
         installPFSim( pf_install_dir )
 
-        # Install PFSim.
-        installPFSim( pf_install_dir )
+        # Check if PF main executable (PowerFactory.exe) is included in the system path.
+        checkForPFExecutable()
 
         _print( '\nFMI++ PowerFactory FMU Export Utility successfully installed.' )
