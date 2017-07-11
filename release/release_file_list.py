@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Copyright (c) 2015, AIT Austrian Institute of Technology GmbH.
+# Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
 # All rights reserved. See file TRNSYS_FMU_LICENSE.txt for details.
 # ----------------------------------------------------------------------
 
@@ -13,16 +13,16 @@
 
 # List of source files (including relative path) that are originally from FMI++.
 files_from_fmipp = [
-    'sources\\common\\FMIPPConfig.h',
-    'sources\\common\\FMIType.h',
-    'sources\\common\\fmi_v1.0\\fmi_cs.h',
-    'sources\\common\\fmi_v1.0\\fmiModelTypes.h',
-    'sources\\common\\fmi_v2.0\\fmi_2.h',
-    'sources\\common\\fmi_v2.0\\fmi2ModelTypes.h',
-    'sources\\export\\functions\\fmi_v1.0\\fmiFunctions.cpp',
-    'sources\\export\\functions\\fmi_v1.0\\fmiFunctions.h',
-    'sources\\export\\include\\FMIComponentFrontEndBase.h',
-    'sources\\export\\tools\\powerfactory\\PowerFactoryFrontEnd.h'
+    'sources\\fmipp\\common\\FMIPPConfig.h',
+    'sources\\fmipp\\common\\FMIVariableType.h',
+    'sources\\fmipp\\common\\FMUType.h',
+    'sources\\fmipp\\common\\fmi_v1.0\\fmi_cs.h',
+    'sources\\fmipp\\common\\fmi_v1.0\\fmiModelTypes.h',
+    'sources\\fmipp\\common\\fmi_v2.0\\fmi_2.h',
+    'sources\\fmipp\\common\\fmi_v2.0\\fmi2ModelTypes.h',
+    'sources\\fmipp\\export\\functions\\fmi_v1.0\\fmiFunctions.cpp',
+    'sources\\fmipp\\export\\functions\\fmi_v1.0\\fmiFunctions.h',
+    'sources\\fmipp\\export\\include\\FMIComponentFrontEndBase.h',
 ]
 
 # Additional list of files (including relative path) from the repository that are part of the release.
@@ -51,16 +51,11 @@ files_for_release = files_from_fmipp + additional_files
 
 # List of binaries that are not provided by the repository (see also README in 'binaries' subfolder).
 required_binaries = [
-    'binaries\\libboost_chrono-vc120-mt-1_58.lib', # static BOOST Chrono libarary
-    'binaries\\libboost_date_time-vc120-mt-1_58.lib', # static BOOST date-time library
     'binaries\\libboost_filesystem-vc120-mt-1_58.lib', # static BOOST Filesystem library
-    'binaries\\libboost_regex-vc120-mt-1_58.lib', # static BOOST Regex libarary
     'binaries\\libboost_system-vc120-mt-1_58.lib', # static BOOST System libarary
     'binaries\\libboost_thread-vc120-mt-1_58.lib', # static BOOST Thread libarary
     'binaries\\libfmipp_fmu_frontend.lib', # static library containing pre-compiled parts of the front end
-    'binaries\\digexdyn.lib', # include library for 'digexdyn.dll'
-    'binaries\\digexdyn.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
-    'binaries\\FMIEventTrigger.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
+    'binaries\\fmiadapter.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
 ]
 
 # The compiled documentation in PDF format (not part of the repository).

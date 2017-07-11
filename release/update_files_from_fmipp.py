@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------
-# Copyright (c) 2015, AIT Austrian Institute of Technology GmbH.
+# Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
 # All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
 # ------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     file_list = []
     for file_name in files_from_fmipp:
         # Construct list of names.
-        file_list.append( fmipp_repository_dir + '\\' + file_name[8:] )
+        file_list.append( fmipp_repository_dir + '\\' + file_name[14:] )
 
     # Check if files exist.
     if ( False == checkFilesExist( file_list ) ): sys.exit(1)

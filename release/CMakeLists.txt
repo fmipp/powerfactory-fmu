@@ -74,22 +74,20 @@ if ( Boost_FOUND )
 endif ()
 
 # Include directories.
-include_directories( ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory )
-include_directories( ${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/include )
+include_directories( ${PROJECT_SOURCE_DIR}/../sources )
 include_directories( ${User_FMIPP_SOURCE_DIR} )
 include_directories( ${User_PF_API_INCLUDE_DIR} )
 
 
 # PowerFactory front end component library (for FMU DLL).
 add_library( libfmipp_fmu_frontend STATIC
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryFrontEnd.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryTimeAdvance.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryExtraOutput.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/PowerFactoryRealScalar.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/src/PowerFactory.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/src/PowerFactoryRMS.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/src/SimpleLogger.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/src/Utils.cpp
+	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
+	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryFrontEnd.cpp
+	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryTimeAdvance.cpp
+	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryExtraOutput.cpp
+	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryRealScalar.cpp
+	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactory.cpp
+	${PROJECT_SOURCE_DIR}/../sources/api/src/Utils.cpp
 	${User_FMIPP_SOURCE_DIR}/export/src/FMIComponentFrontEndBase.cpp
 	${User_FMIPP_SOURCE_DIR}/export/src/HelperFunctions.cpp
 	${User_FMIPP_SOURCE_DIR}/export/src/ScalarVariable.cpp
@@ -97,28 +95,17 @@ add_library( libfmipp_fmu_frontend STATIC
 	${User_FMIPP_SOURCE_DIR}/import/base/src/PathFromUrl.cpp
 )
 
-add_library( digexdyn SHARED
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/digexdyn/digexdyn.def
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/digexdyn/digexdyn.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/digexdyn/userdyn.cpp
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/api/src/RmsSimEventQueue.cpp )
+add_library( fmiadapter SHARED
+	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/include/digusermodel.def
+	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/digusermodel.c
+	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/FMIAdapter.c
+	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/RmsSimEventQueue.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/accessRmsSimEventQueue.cpp
+)
 
-target_link_libraries( digexdyn
-	Shlwapi
-	${CMAKE_DL_LIBS}
-	${Boost_LIBRARIES}
-	)
-
-add_library( FMIEventTrigger SHARED
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/FMIEventTrigger/digusermodel.def
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/FMIEventTrigger/digusermodel.c
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/FMIEventTrigger/FMIEventTrigger.c
-	${User_FMIPP_SOURCE_DIR}/export/tools/powerfactory/FMIEventTrigger/accessRmsSimEventQueue.cpp )
-
-target_link_libraries( FMIEventTrigger
+target_link_libraries( fmiadapter
 	Shlwapi
 	${CMAKE_DL_LIBS}
 	${Boost_LIBRARIES}
 	${User_PF_USER_MODEL_LIB_DIR}/ControllerLibrary.lib
-	digexdyn
-	)
+)

@@ -4,12 +4,12 @@
 # -----------------------------------------------------------------------
 
 ### Python 2
-# import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
-# def _print( *arg ): print ' '.join( map( str, arg ) )
+import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
+def _print( *arg ): print ' '.join( map( str, arg ) )
 
 ### Python 3
-import sys, os, shutil, time, getpass, uuid, urllib.parse, urllib, getopt, pickle, subprocess, glob
-def _print( *arg ): print( ' '.join( map( str, arg ) ) )
+# import sys, os, shutil, time, getpass, uuid, urllib.parse, urllib, getopt, pickle, subprocess, glob
+# def _print( *arg ): print( ' '.join( map( str, arg ) ) )
 
 
 # Helper function.
@@ -266,7 +266,7 @@ def usage():
 	_print( '-v, --verbose\t\tturn on log messages' )
 	_print( '-l, --litter\t\tdo not clean-up intermediate files' )
 	_print( '-d, --pf-install-dir=\tpath to PowerFactory installation directory' )
-	_print( '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>". For RMS simulations, input events have to be specified in the form \"FMIEvent.<parameter-name>\".' )
+	_print( '\nFiles containing lists of input and output variable name are expected to be in clear text, listing exactly one valid variable name per line. Variable names are supposed to be of the  form "<class-name>.<object-name>.<parameter-name>". For RMS simulations, input events have to be specified in the form \"<event-type>.<target-slot>.<parameter-name>\" (currently only events of type "EvtParam" are supported).' )
 	_print( '\nTriggers for simulation time advance need to be defined in the form \"<name>:<scale>\". The name has to be given according to the trigger\'s object name in the PFD file. Times given to the FMU are interpreted as seconds, therefore the scale can be adjusted to match the trigger\'s internal unit of time (e.g., 60 for minutes or 3600 for hours). Multiple triggers may be defined. Alternatively, a single DPL script may be specified to advance simulation time in the form \"<name>:<scale>:<offset>\". For RMS simulations, only the integrator step size (in seconds) has to be specified.' )
 	_print( '\nAdditional files may be specified (e.g., CSV load profiles or extra output definition files) that will be automatically copied to the FMU.' )
 	_print( '\nStart values for variables may be defined. For instance, to set variable with name \"var1\" to value 12.34, specifiy \"var1=12.34\" in the command line as optional argument.' )
@@ -280,7 +280,7 @@ def variableNameIsValid( var_name ):
 	# Split the variable name using the '.' as seperator.
 	labels = var_name.split( '.' )
 	# Check if the variable consists of two (RMS input events) or three labels.
-	if ( ( 3 != len( labels ) ) and ( 2 != len( labels ) ) ): return False
+	if ( 3 != len( labels ) ): return False
 	# Check if there is no empty label.
 	if ( 0 == min( map( len, labels ) ) ): return False
 	# The last label (parameter name) may contain ':' as separators.
