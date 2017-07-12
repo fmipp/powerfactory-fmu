@@ -1,7 +1,7 @@
-# ----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 # Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
-# All rights reserved. See file TRNSYS_FMU_LICENSE.txt for details.
-# ----------------------------------------------------------------------
+# All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+# -----------------------------------------------------------------------
 
 ########################################################################
 #
@@ -17,12 +17,24 @@ files_from_fmipp = [
     'sources\\fmipp\\common\\FMIVariableType.h',
     'sources\\fmipp\\common\\FMUType.h',
     'sources\\fmipp\\common\\fmi_v1.0\\fmi_cs.h',
+	'sources\\fmipp\\common\\fmi_v1.0\\fmi_me.h',
     'sources\\fmipp\\common\\fmi_v1.0\\fmiModelTypes.h',
     'sources\\fmipp\\common\\fmi_v2.0\\fmi_2.h',
     'sources\\fmipp\\common\\fmi_v2.0\\fmi2ModelTypes.h',
     'sources\\fmipp\\export\\functions\\fmi_v1.0\\fmiFunctions.cpp',
     'sources\\fmipp\\export\\functions\\fmi_v1.0\\fmiFunctions.h',
     'sources\\fmipp\\export\\include\\FMIComponentFrontEndBase.h',
+    'sources\\fmipp\\export\\include\\ScalarVariable.h',
+	'sources\\fmipp\\export\\include\\HelperFunctions.h',
+    'sources\\fmipp\\export\\src\\FMIComponentFrontEndBase.cpp',
+    'sources\\fmipp\\export\\src\\HelperFunctions.cpp',
+    'sources\\fmipp\\export\\src\\ScalarVariable.cpp',
+	'sources\\fmipp\\import\\base\\include\\BareFMU.h',
+	'sources\\fmipp\\import\\base\\include\\ModelDescription.h',
+	'sources\\fmipp\\import\\base\\include\\ModelManager.h',
+	'sources\\fmipp\\import\\base\\include\\PathFromUrl.h',
+    'sources\\fmipp\\import\\base\\src\\ModelDescription.cpp',
+    'sources\\fmipp\\import\\base\\src\\PathFromUrl.cpp',
 ]
 
 # Additional list of files (including relative path) from the repository that are part of the release.

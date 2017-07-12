@@ -1,7 +1,7 @@
-# --------------------------------------------------------------
-# Copyright (c) 2015, AIT Austrian Institute of Technology GmbH.
-# All rights reserved. See file TRNSYS_FMU_LICENSE for details.
-# --------------------------------------------------------------
+# -----------------------------------------------------------------------
+# Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+# All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+# -----------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -16,9 +16,9 @@ cmake_minimum_required(VERSION 2.8)
 
 
 # Variables to be defined by the user.
-set( User_FMIPP_SOURCE_DIR "D:/Development/fmipp" CACHE PATH "FMI++ source directory" )
 set( User_PF_API_INCLUDE_DIR "D:/DIgSILENT/pf2016/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
 set( User_PF_USER_MODEL_LIB_DIR "D:/DIgSILENT/pf2016/digusermodel/Release" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
+
 
 # Define project.
 project( FMIPP_POWERFACTORY_FMU_EXPORT )
@@ -73,28 +73,31 @@ if ( Boost_FOUND )
    link_directories( ${Boost_LIBRARY_DIRS} )
 endif ()
 
+
 # Include directories.
 include_directories( ${PROJECT_SOURCE_DIR}/../sources )
-include_directories( ${User_FMIPP_SOURCE_DIR} )
+include_directories( ${PROJECT_SOURCE_DIR}/../sources/fmipp )
 include_directories( ${User_PF_API_INCLUDE_DIR} )
 
 
-# PowerFactory front end component library (for FMU DLL).
+# PowerFactory front end component library (pre-compiled basis for FMU DLL).
 add_library( libfmipp_fmu_frontend STATIC
-	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
 	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryFrontEnd.cpp
 	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryTimeAdvance.cpp
 	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryExtraOutput.cpp
 	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryRealScalar.cpp
 	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactory.cpp
+	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
 	${PROJECT_SOURCE_DIR}/../sources/api/src/Utils.cpp
-	${User_FMIPP_SOURCE_DIR}/export/src/FMIComponentFrontEndBase.cpp
-	${User_FMIPP_SOURCE_DIR}/export/src/HelperFunctions.cpp
-	${User_FMIPP_SOURCE_DIR}/export/src/ScalarVariable.cpp
-	${User_FMIPP_SOURCE_DIR}/import/base/src/ModelDescription.cpp
-	${User_FMIPP_SOURCE_DIR}/import/base/src/PathFromUrl.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/FMIComponentFrontEndBase.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/HelperFunctions.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/ScalarVariable.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/ModelDescription.cpp
+	${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/PathFromUrl.cpp
 )
 
+
+# DLL for user-defined PowerFactory DSL model (FMIAdapter).
 add_library( fmiadapter SHARED
 	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/include/digusermodel.def
 	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/digusermodel.c
@@ -102,6 +105,7 @@ add_library( fmiadapter SHARED
 	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/RmsSimEventQueue.cpp
 	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/accessRmsSimEventQueue.cpp
 )
+
 
 target_link_libraries( fmiadapter
 	Shlwapi

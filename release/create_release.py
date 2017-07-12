@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------
-# Copyright (c) 2015, AIT Austrian Institute of Technology GmbH.
+# Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
 # All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
 # ---------------------------------------------------------------------------------
 

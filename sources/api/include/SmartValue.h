@@ -1,7 +1,7 @@
-/* --------------------------------------------------------------
- * Copyright (c) 2017, AIT Austrian Institute of Technology GmbH.
- * All rights reserved. See file FMIPP_LICENSE for details.
- * --------------------------------------------------------------*/
+/* -----------------------------------------------------------------------
+ * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+ * -----------------------------------------------------------------------*/
 
 #ifndef _PF_API_SMARTVALUE_H
 #define _PF_API_SMARTVALUE_H

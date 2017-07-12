@@ -1,3 +1,8 @@
+/* -----------------------------------------------------------------------
+ * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+ * -----------------------------------------------------------------------*/
+
 #ifndef _POWER_FACTORY_FMIADAPTER_H
 #define _POWER_FACTORY_FMIADAPTER_H
 

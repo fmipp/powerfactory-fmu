@@ -1,11 +1,16 @@
+/* -----------------------------------------------------------------------
+ * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+ * -----------------------------------------------------------------------*/
+
 /**
  * \file FMIAdapter.c
  *
  * Compiled DSL model for PowerFactory.
  *
  * Receives information from instances of class PowerFactoryFrontEnd, which is then
- * emitted as event to PowerFactory. Whenever this happens, in addition a pulse signal 
- * is generated as output (output variable called "trigger").
+ * emitted as event to PowerFactory. Whenever this happens, in addition a pulse
+ * signal is generated as output (output variable called "trigger").
  *
  * \author Edmund Widl
  */

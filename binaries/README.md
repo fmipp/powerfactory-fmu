@@ -1,6 +1,6 @@
-This directory should contain the following libraries (all compiled in Release mode with Microsoft Visual C++ 2013 Express):
+This directory should contain the following libraries (all compiled in Release mode with Microsoft Studio Express 2013):
 
-From FMI++ (generated with the help of the CMake project file in folder 'release'):
+From FMI++ (generated with the help of the CMake project file in folder *release*):
 - libfmipp_fmu_frontend.lib
 - fmiadapter.dll
 
