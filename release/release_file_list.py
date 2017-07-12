@@ -14,10 +14,8 @@
 # List of source files (including relative path) that are originally from FMI++.
 files_from_fmipp = [
     'sources\\fmipp\\common\\FMIPPConfig.h',
-    'sources\\fmipp\\common\\FMIVariableType.h',
     'sources\\fmipp\\common\\FMUType.h',
     'sources\\fmipp\\common\\fmi_v1.0\\fmi_cs.h',
-	'sources\\fmipp\\common\\fmi_v1.0\\fmi_me.h',
     'sources\\fmipp\\common\\fmi_v1.0\\fmiModelTypes.h',
     'sources\\fmipp\\common\\fmi_v2.0\\fmi_2.h',
     'sources\\fmipp\\common\\fmi_v2.0\\fmi2ModelTypes.h',
@@ -29,9 +27,7 @@ files_from_fmipp = [
     'sources\\fmipp\\export\\src\\FMIComponentFrontEndBase.cpp',
     'sources\\fmipp\\export\\src\\HelperFunctions.cpp',
     'sources\\fmipp\\export\\src\\ScalarVariable.cpp',
-	'sources\\fmipp\\import\\base\\include\\BareFMU.h',
 	'sources\\fmipp\\import\\base\\include\\ModelDescription.h',
-	'sources\\fmipp\\import\\base\\include\\ModelManager.h',
 	'sources\\fmipp\\import\\base\\include\\PathFromUrl.h',
     'sources\\fmipp\\import\\base\\src\\ModelDescription.cpp',
     'sources\\fmipp\\import\\base\\src\\PathFromUrl.cpp',
