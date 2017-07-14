@@ -491,11 +491,24 @@ PowerFactory::getActiveStudyCaseObject( const char* className,const std::string&
 	MapStrDataObj objMap;
 	SmartObject activeStudyCase( app_->GetActiveStudyCase() );
 	int error = getChildObjects( className, *activeStudyCase, objMap, recursive );
-	if ( 0 != error ) return error;
 
-	if ( true == objectName.empty() ) { //get first element if no name is specified
-		if ( true == objMap.empty() ) return PowerFactory::NoSuchObject;
+	if ( 0 != error ) {
+		std::stringstream strError;
+		strError << "error while retrieving object of type " << className
+		         << " found in current study case. error code = " << error;
+		logger( PowerFactoryLoggerBase::Error, "PowerFactory::getActiveStudyCaseObject", strError.str() );
+		return error;
+	}
 
+	if ( true == objMap.empty() ) {
+		std::stringstream warning;
+		warning << "no object of type " << className << " found in current study case.";
+		logger( PowerFactoryLoggerBase::Warning, "PowerFactory::getActiveStudyCaseObject", warning.str() );
+		return PowerFactory::NoSuchObject;
+	}
+	
+	if ( true == objectName.empty() ) //get first element if no name is specified
+	{
 		child = objMap.begin()->second;
 
 		if( objMap.size() > 1 ) {
