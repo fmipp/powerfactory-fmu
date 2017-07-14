@@ -5,12 +5,15 @@
 
 ###################################################################################
 #
-# This script creates a new release of the FMI++ PowerFactory FMU Export Utility.
+# This script creates a new release of the FMI++ PowerFactory FMU Export Utility, 
+# intended to be shared as a pre-compiled downloadable stand-alone version.
 #
 # Before running this scrip, do the following:
-#   - compile the documentation (doc\powerfactory-fmu-doc.tex)
-#   - compile the FMI++ related binaries (release\CMakeLists.txt)
-#   - copy the external BOOST libraries (see binaries\README.txt)
+#   - update source code from FMI++ (release/update_files_from_fmipp.py)
+#   - copy the external BOOST libraries (see binaries/README.txt)
+#   - compile the binaries (via release/CMakeLists.txt)
+#   - run the tests (via release/test/CMakeLists.txt)
+#   - compile the documentation (doc/powerfactory-fmu-doc.tex)
 #
 ###################################################################################
 

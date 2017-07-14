@@ -31,6 +31,39 @@ files_from_fmipp = [
 	'sources\\fmipp\\import\\base\\include\\PathFromUrl.h',
     'sources\\fmipp\\import\\base\\src\\ModelDescription.cpp',
     'sources\\fmipp\\import\\base\\src\\PathFromUrl.cpp',
+	"sources\\fmipp\\import\\base\\include\\CallbackFunctions.h", # only for testing
+	"sources\\fmipp\\import\\base\\include\\LogBuffer.h", # only for testing
+	"sources\\fmipp\\import\\base\\src\\CallbackFunctions.cpp", # only for testing
+	"sources\\fmipp\\import\\base\\src\\LogBuffer.cpp", # only for testing
+]
+
+# Source code for the PowerFactory FMU Export Utility.
+source_code = [
+	'sources\\api\\include\\PowerFactory.h',
+	'sources\\api\\include\\PowerFactoryLoggerBase.h',
+	'sources\\api\\include\\PowerFactoryRMS.h',
+	'sources\\api\\include\\SmartValue.h',
+	'sources\\api\\include\\Utils.h',
+	'sources\\api\\src\\PowerFactory.cpp',
+	'sources\\api\\src\\PowerFactoryRMS.cpp',
+	'sources\\api\\src\\Utils.cpp',
+	'sources\\fmiadapter\\include\\digusermodel.def',
+	'sources\\fmiadapter\\include\\digusermodel.h',
+	'sources\\fmiadapter\\include\\FMIAdapter.h',
+	'sources\\fmiadapter\\include\\GetNextEventStatus.h',
+	'sources\\fmiadapter\\include\\RmsSimEventQueue.h',
+	'sources\\fmiadapter\\src\\accessRmsSimEventQueue.cpp',
+	'sources\\fmiadapter\\src\\digusermodel.c',
+	'sources\\fmiadapter\\src\\FMIAdapter.c',
+	'sources\\fmiadapter\\src\\RmsSimEventQueue.cpp',
+	'sources\\frontend\\include\\PowerFactoryExtraOutput.h',
+	'sources\\frontend\\include\\PowerFactoryFrontEnd.h',
+	'sources\\frontend\\include\\PowerFactoryRealScalar.h',
+	'sources\\frontend\\include\\PowerFactoryTimeAdvance.h',
+	'sources\\frontend\\src\\PowerFactoryExtraOutput.cpp',
+	'sources\\frontend\\src\\PowerFactoryFrontEnd.cpp',
+	'sources\\frontend\\src\\PowerFactoryRealScalar.cpp',
+	'sources\\frontend\\src\\PowerFactoryTimeAdvance.cpp',
 ]
 
 # Additional list of files (including relative path) from the repository that are part of the release.
@@ -38,24 +71,28 @@ additional_files = [
     'powerfactory_fmu_install.py', # installation script
     'powerfactory_fmu_create.py', # script for creating a PowerFactory FMU
     'build.bat', # batch script for FMU compilation
-    'binaries\\README.txt',
+    'binaries\\README.md',
+	'examples\\dplscript\\README.md',
+	'examples\\dplscript\\TestDPLScript.pfd',
+	'examples\\dplscript\\TestDPLScript-inputs.txt',
+	'examples\\dplscript\\TestDPLScript-outputs.txt',
+	'examples\\rms\\README.md',
+	'examples\\rms\\TestRMS.pfd',
+	'examples\\rms\\TestRMS-inputs.txt',
+	'examples\\rms\\TestRMS-outputs.txt',
+	'examples\\triggers\\README.md',
+	'examples\\triggers\\TestTriggers.pfd',
+	'examples\\triggers\\TestTriggers-characteristics.csv',
+	'examples\\triggers\\TestTriggers-inputs.txt',
+	'examples\\triggers\\TestTriggers-outputs.txt',
     'license\\BOOST_SOFTWARE_LICENSE.txt',
     'license\\FMIPP_LICENSE.txt',
     'license\\POWERFACTORY_FMU_LICENSE.txt',
-    'release\\CMakeLists.txt',
-    'test\\dplscript\\README.txt',
-    'test\\dplscript\\TestDPLScript.pfd',
-    'test\\dplscript\\TestDPLScript-inputs.txt',
-    'test\\dplscript\\TestDPLScript-outputs.txt',
-    'test\\triggers\\README.txt',
-    'test\\triggers\\TestTriggers.pfd',
-    'test\\triggers\\TestTriggers-inputs.txt',
-    'test\\triggers\\TestTriggers-outputs.txt',
-    'test\\triggers\\TestTriggers-characteristics.csv'
+	'sources\\README.md'
 ]
 
 # List of files (without binaries and docs) that are part of the release.
-files_for_release = files_from_fmipp + additional_files
+files_for_release = files_from_fmipp + source_code + additional_files
 
 # List of binaries that are not provided by the repository (see also README in 'binaries' subfolder).
 required_binaries = [
