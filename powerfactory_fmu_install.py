@@ -17,21 +17,14 @@ def savePowerFactoryInstallDir( pf_install_dir ):
 
 
 def installPFSim( pf_install_dir ):
-        # Check if file binaries\digexdyn.dll exists.
-        digexdyn_file_name = os.path.join( 'binaries', 'digexdyn.dll' )
-        if ( False == os.path.isfile( digexdyn_file_name ) ):
-                _print( '\nERROR: file', digexdyn_file_name, 'not found' )
+        # Check if file binaries\fmiadapter.dll exists.
+        fmiadapter_file_name = os.path.join( 'binaries', 'fmiadapter.dll' )
+        if ( False == os.path.isfile( fmiadapter_file_name ) ):
+                _print( '\nERROR: file', fmiadapter_file_name, 'not found' )
                 sys.exit()
 
-        # Check if file binaries\FMIEventTrigger.dll exists.
-        fmiEventTrigger_file_name = os.path.join( 'binaries', 'FMIEventTrigger.dll' )
-        if ( False == os.path.isfile( fmiEventTrigger_file_name ) ):
-                _print( '\nERROR: file', fmiEventTrigger_file_name, 'not found' )
-                sys.exit()
-
-        # Copy digexdyn.dll and digexfun1.dll to PowerFactory installation directory
-        shutil.copy( digexdyn_file_name, pf_install_dir )
-        shutil.copy( fmiEventTrigger_file_name, pf_install_dir )
+        # Copy fmiadapter.dll to PowerFactory installation directory
+        shutil.copy( fmiadapter_file_name, pf_install_dir )
 
 
 def checkForPFExecutable():
