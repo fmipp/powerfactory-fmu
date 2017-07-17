@@ -17,10 +17,8 @@
 #
 ###################################################################################
 
-
 import sys, os, zipfile, zlib
 
-# def _print( *arg ): print ' '.join( map( str, arg ) )
 def _print( *arg ): print( ' '.join( map( str, arg ) ) )
 
 # Import module with lists of files for release.

@@ -4,12 +4,13 @@
 # -----------------------------------------------------------------------
 
 ### Python 2
-import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
-def _print( *arg ): print ' '.join( map( str, arg ) )
+# import sys, os, shutil, time, getpass, uuid, urlparse, urllib, getopt, pickle, subprocess, glob
 
 ### Python 3
-# import sys, os, shutil, time, getpass, uuid, urllib.parse, urllib, getopt, pickle, subprocess, glob
-# def _print( *arg ): print( ' '.join( map( str, arg ) ) )
+import sys, os, shutil, time, getpass, uuid, urllib.parse, urllib, getopt, pickle, subprocess, glob
+
+
+def _print( *arg ): print( ' '.join( map( str, arg ) ) )
 
 
 # Helper function.
