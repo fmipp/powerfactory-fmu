@@ -15,8 +15,8 @@ cmake_minimum_required(VERSION 2.8)
 project( PF_FMU_Export_Utility_Test )
 
 # Variables to be defined by the user.
-set( User_PF_ROOT_DIR "C:/DIgSILENT/pf2016" CACHE PATH "directory containing the implementation of the PF API" )
-set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2016/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_ROOT_DIR "C:/DIgSILENT/pf2017" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_API_LIB_DIR "C:/DIgSILENT/pf2017/Api/lib/VS2013" CACHE PATH "directory containing the implementation of the PF API" )
 
 # Other project-specific variables.
 set( MODEL_IDENTIFIER "PF_FMU_Test" CACHE STRING "FMI model identfier" )
@@ -78,7 +78,7 @@ add_library( ${MODEL_IDENTIFIER} SHARED
 target_link_libraries( ${MODEL_IDENTIFIER}
 	Shlwapi
 	${CMAKE_DL_LIBS}
-	${User_PF_API_INCLUDE_DIR}/digapivalue.lib
+	${User_PF_API_LIB_DIR}/digapivalue.lib
 	${PF_FMU_BIN_DIR}/fmiadapter.lib
 	${PF_FMU_BIN_DIR}/libfmipp_fmu_frontend.lib
 	${PF_FMU_BIN_DIR}/libboost_filesystem-vc120-mt-1_58.lib

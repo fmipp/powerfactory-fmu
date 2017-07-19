@@ -16,8 +16,8 @@ cmake_minimum_required(VERSION 2.8)
 
 
 # Variables to be defined by the user.
-set( User_PF_API_INCLUDE_DIR "D:/DIgSILENT/pf2016/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
-set( User_PF_USER_MODEL_LIB_DIR "D:/DIgSILENT/pf2016/digusermodel/Release" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
+set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2017/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_USER_MODEL_LIB_DIR "C:/DIgSILENT/pf2017/digusermodel/Release/VS2013" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
 
 
 # Define project.
