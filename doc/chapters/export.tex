@@ -6,37 +6,19 @@
 
 For the purpose of co-simulation it is typically necessary to define a notion of time within a simulation model.
 In \pf there are several ways to do so.
-In the following, the ways supported by the \fmipp \pf FMU export library are presented.
+In the following, it is shown how \pf models have to be created in order to be usable with the \fmipp \pf FMU export utility.
+Furthermore, the procedure to create FMUs from such models is explained.
+Examples for all cases are given in Chapter~\ref{sec:examples}.
 
-\subsubsection*{Note:}
-Currently only steady-state simulation are supported, where the system's evolution with respect to time comprises a series of load flow snapshots.
-RMS simulations are planned to be supported in the future.
-
-
-\section{Naming convention}
-\label{sec:export:naming_convention}
-
-A naming convention is needed that allows to refer to parameters defined in a \pf model in an FMI compliant way (e.g., in the model description).
-For the \fmipp \pf FMU export utility this is done by concatenating a parameter's name with the associated object's type and name in the following way:
-\begin{verbatim}
-FMI compliant name = <object-type>.<object-name>.<parameter-name>
-\end{verbatim}
-For instance, the parameter \texttt{plini} associated to a general load (object type \texttt{ElmLod}) called \texttt{Load} would be referred to as \texttt{ElmLod.Load.plini} in the model description.
-
-
-\subsubsection*{Note:}
-The naming convention above requires to only use \emph{parameter names} and \emph{object names} that \emph{do not contain periods} "." within \pf models.
-Furthermore, the name of objects/parameters has to be \emph{unique within the model}.
-These restrictions only apply to objects/parameters that are declared as input or output variables for the co-simulation interface.
-It is also recommended to avoid blanks in in the names of such objects/parameters.
 
 
 \section{Models using external time series and triggers}
 
 \subsection{Creating models using external time series and triggers}
 
-Parameters in \pf can be associated with a time series by providing an external file, called a \emph{Parameter Characteristic from File} (\pf object of type \texttt{ChaVecFile}).
-The actual value of the parameter can be changed by associating a user-defined \emph{Trigger and Unit for File} (\pf object of type \texttt{TriFile}) to such a time series.
+The method explained in this section can be used for creating models for quasi-static steady-state simulations.
+It relies on \pf's functionality to associate object parameters with a time series by providing an external file, called a \emph{Parameter Characteristic from File} (type \texttt{ChaVecFile}).
+The actual value of the parameter can be changed by associating a user-defined \emph{Trigger and Unit for File} (type \texttt{TriFile}) to such a time series.
 Figure~\ref{fig:characteristics_from_file} shows the setup window for such a characteristic from file, which defines the associated external file (called \texttt{TestTriggers-characteristics.csv}) and the trigger (defined via the \texttt{Scale} field).
 Figure~\ref{fig:trigger_for_file} shows the setup for the trigger itself.
 \begin{figure}[h!]
@@ -79,32 +61,31 @@ Open the command prompt window and execute the script \texttt{powerfactory\_fmu\
 
 \begin{verbatim}
 python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
-  -m model_id -p pfd_file [-d pf_install_dir] [-i input_var_file]
-  [-o output_var_file] [-t name:scale] [additional_file_1 ... ]
+  -m model_id -p pfd_file -i input_var_file -o output_var_file
+  -t name:scale] [-d pf_install_dir] [additional_file_1 ... ]
   [var1=start_val1 ...]
 \end{verbatim}
 
 The path to the \fmipp \pf FMU export utility directory \verb!<path_to_pf_fmu_dir>! may be relative or absolute.
-Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!, terms in angle brackets \verb!<!$\,$\ldots\verb!>! represent file paths.
+Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
   
 \textit{Mandatory input arguments}:
-  \begin{itemize}
-    \item \verb!-m, --model-id!: specify FMU model identifier
-    \item \verb!-p, --pfd-file!: path to PowerFactory PFD file
-  \end{itemize}
-  \textit{Optional input arguments}:
-  \begin{itemize}
-    \item \verb!-h, --help!: display the help screen
-    \item \verb!-v, --verbose!: turn on log messages
-    \item \verb!-l, --litter!: do not clean-up intermediate files
-    \item \verb!-i, --input-var-file!: specify file containing list of input variable names
-    \item \verb!-o, --output-var-file!: specify file containing list of output variable names
-    \item \verb!-t, --trigger!: specify a trigger for advancing simulation time
-    \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on a another machine with a different installation directory path.}
-  \end{itemize}
-\end{enumerate}
+\begin{itemize}
+  \item \verb!-m, --model-id!: specify FMU model identifier
+  \item \verb!-p, --pfd-file!: path to PowerFactory PFD file
+  \item \verb!-i, --input-var-file!: specify file containing list of input variable names
+  \item \verb!-o, --output-var-file!: specify file containing list of output variable names
+  \item \verb!-t, --trigger!: specify a trigger for advancing simulation time
+\end{itemize}
+\textit{Optional input arguments}:
+\begin{itemize}
+  \item \verb!-h, --help!: display the help screen
+  \item \verb!-v, --verbose!: turn on log messages
+  \item \verb!-l, --litter!: do not clean-up intermediate files
+  \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+\end{itemize}
 Files containing lists of input and output variable names are expected to be in clear text, listing exactly one valid variable name per line.
-As explained in Section~\ref{sec:export:naming_convention}, variable names are supposed to be of the  form \texttt{<object-type>.<object-name>.<parameter-name>}.
+As explained in Section~\ref{sec:naming_convention:obj_param}, variable names are supposed to be of the  form \texttt{<obj-type>.<obj-name>.<param-name>}.
 
 Triggers for simulation time advance need to be defined in the form \texttt{<name>:<scale>}.
 The \texttt{name} has to be given according to the trigger's object name in the PFD file.
@@ -117,25 +98,30 @@ Furthermore, start values for variables may be defined. For instance, to set a v
 
 Section~\ref{sec:examples:triggers} gives a concrete example of how to export such a model using time series and triggers as an FMU.
 
+\newpage
 
 \section{Models using a \dplscript to define the time}
 
 \subsection{Creating models using a \dplscript to define the time}
 \label{sec:export:create_model_dplscript}
 
-Parameters in \pf can be associated with 1-dimensional vectors, called \emph{Characteristic -- Vector} (\pf object of type \texttt{ChaVec}).
-The actual value of the parameter can be changed by associating the elements of such a vector to a \emph{Time Scale} (\pf object of type \texttt{TriTime}) that maps each element to a specific point in time.
+The method explained in this section can be used for creating models for quasi-static steady-state simulations.
+It relies on \pf's functionality to associate object parameters to 1-dimensional vectors, called \emph{Characteristic -- Vector} (type \texttt{ChaVec}).
+The actual value of the parameter can be changed by associating the elements of such a vector to a \emph{Time Scale} (type \texttt{TriTime}) that maps each element to a specific point in time.
 Time itself within the model can then be set with the help of a dedicated \dplscript.
 Figure~\ref{fig:characteristics_from_vector} shows the setup window for such a vector characteristic, which defines the mapping of the values to the points in time defined by the time scale (defined via the \texttt{Scale} field).
 Figure~\ref{fig:trigger_for_vector} shows the setup for the time scale itself.
 
 
 \begin{figure}[h!]
-\vspace*{1em}
+\vspace*{1ex}
 \centering{\includegraphics[width=0.9\textwidth]{characteristics_from_vector}}
 \caption{\pf window for defining a parameter characteristic from a vector.}
 \label{fig:characteristics_from_vector}
-\vspace*{2em}
+\end{figure}
+
+\begin{figure}[h!]
+\vspace*{1ex}
 \centering{\includegraphics[width=0.85\textwidth]{trigger_for_vector}}
 \caption{\pf window for defining a trigger and unit for a vector.}
 \label{fig:trigger_for_vector}
@@ -199,32 +185,31 @@ Open the command prompt window and execute the script \texttt{powerfactory\_fmu\
 
 \begin{verbatim}
 python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
-  -m model_id -p pfd_file [-d pf_install_dir] [-i input_var_file]
-  [-o output_var_file] [-s name:scale:offset] [additional_file_1 ... ]
+  -m model_id -p pfd_file  -i input_var_file -o output_var_file -s
+  name:scale:offset [-d pf_install_dir] [additional_file_1 ... ]
   [var1=start_val1 ...]
 \end{verbatim}
 
 The path to the \fmipp \pf FMU export utility directory \verb!<path_to_pf_fmu_dir>! may be relative or absolute.
-Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!, terms in angle brackets \verb!<!$\,$\ldots\verb!>! represent file paths.
+Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
   
 \textit{Mandatory input arguments}:
-  \begin{itemize}
-    \item \verb!-m, --model-id!: specify FMU model identifier
-    \item \verb!-p, --pfd-file!: path to PowerFactory PFD file
-  \end{itemize}
-  \textit{Optional input arguments}:
-  \begin{itemize}
-    \item \verb!-h, --help!: display the help screen
-    \item \verb!-v, --verbose!: turn on log messages
-    \item \verb!-l, --litter!: do not clean-up intermediate files
-    \item \verb!-i, --input-var-file!: specify file containing list of input variable names
-    \item \verb!-o, --output-var-file!: specify file containing list of output variable names
-    \item \verb!-s, --dpl-script!: specify a \dplscript for advancing simulation time
-    \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on a another machine with a different installation directory path.}
-  \end{itemize}
-\end{enumerate}
+\begin{itemize}
+  \item \verb!-m, --model-id!: specify FMU model identifier
+  \item \verb!-p, --pfd-file!: path to PowerFactory PFD file
+  \item \verb!-i, --input-var-file!: specify file containing list of input variable names
+  \item \verb!-o, --output-var-file!: specify file containing list of output variable names
+  \item \verb!-s, --dpl-script!: specify a \dplscript for advancing simulation time
+\end{itemize}
+\textit{Optional input arguments}:
+\begin{itemize}
+  \item \verb!-h, --help!: display the help screen
+  \item \verb!-v, --verbose!: turn on log messages
+  \item \verb!-l, --litter!: do not clean-up intermediate files
+  \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+\end{itemize}
 Files containing lists of input and output variable names are expected to be in clear text, listing exactly one valid variable name per line.
-As explained in Section~\ref{sec:export:naming_convention}, variable names are supposed to be of the form \texttt{<object-type>.<object-name>.<parameter-name>}.
+As explained in Section~\ref{sec:naming_convention:obj_param}, variable names are supposed to be of the form \texttt{<obj-type>.<obj-name>.<param-name>}.
 
 A single \dplscript may be specified to advance simulation time in the form \texttt{<name>:<scale>:<offset>}.
 The \texttt{name} has to be given according to the script's name in the PFD file.
@@ -237,13 +222,108 @@ Furthermore, start values for variables may be defined. For instance, to set a v
 Section~\ref{sec:examples:dplscript} gives a concrete example of how to export such a model using a \dplscript as an FMU.
 
 
-\section{Writing additional output}
-\label{sec:export:additional_output}
+\newpage
 
-When using a \pf model within a co-simulation, it is possible to write additional simulation results from \pf that are not specified as FMU outputs.
-To do so, simply add text files with file extension \texttt{.info} as additional files, containing a list of variable names in clear text, listing exactly one valid variable name per line (just like the input input/output variable name lists for creating an FMU).
-For each of these files, a CSV file with the same name (but file extension \texttt{.csv}) will be generated during a simulation run, containing the simulated values of the variables defined in the \texttt{.info} file.
-For instance, adding an additional file called \texttt{extra\_data.info} will at simulation time result in the creation of a file called \texttt{extra\_data.csv}.
 
-\subsubsection*{Note:}
-These \texttt{.info} files have to be specifically specified as additional files when creating an FMU!
+\section{Models for RMS simulations}
+
+\subsection{Creating models for RMS simulation}
+\label{sec:export:create_model_rms}
+
+The method explained in this section can be used for creating models for RMS simulations.
+
+\subsubsection*{Sending simulation events as inputs}
+
+This approach relies on \pf's functionality to associate objects with user-defined {\dslmodel}s via a composite model (type \texttt{ElmComp}).
+By sending a so-called \emph{parameter event} (type \texttt{EvtParam}) to such a \dslmodel, the model's input parameters can be changed.
+This change of input parameters can be easily propagated to the parameters of any object by connecting the \dslmodel with the corresponding object in a composite model.
+
+\subsubsection*{Setup of \dslmodel FMIAdapter}
+
+For sending events to a composite model, a dedicated compiled \dslmodel called \emph{FMIAdapter} is provided.
+To include this \dslmodel into a \pf model, create a new empty \dslmodel (see \pf User Manual, Section~28.12.3 Defining DSL Models) and choose \emph{Compiled model}  as \emph{Model type}.
+Then type \emph{fmiadapter.dll} into the field \emph{DLL-file}.\footnote{
+  This works only if during the installation of the FMU export utility the DLL-file \emph{fmiadapter.dll} was successfully copied to the \pf installation directory.
+  If this is not the case, it is also possible to select this file from the \emph{binaries} folder located in the installation directory of the FMU export utility. To do so, click on the button with the three dots.}
+The resulting model definition should look like Figure~\ref{fig:fmiadapter_model_definition}.
+It is recommended -- but not necessary -- to name this new \dslmodel as \emph{FMIAdapter} and store it in the project folder \emph{Library} $\to$ \emph{User Defined Models}.
+
+\subsubsection*{Including \dslmodel FMIAdapter into a composite model}
+
+To use the \dslmodel FMIAdapter it has to be included into a composite model.
+This can be done by simply adding a dedicated slot to a composite frame (see \pf User Manual, Section~28.10.2 The Composite Frame), see for instance Figure~\ref{fig:fmiadapter_slot}.
+The corresponding slot does not have to be connected to any other slot.
+FMIAdapter's output signal called \emph{trigger} is mostly intended for debugging purposes, sending a trigger signal whenever an event has been issued.
+
+Figure~\ref{fig:fmiadapterconfig_composite_frame} shows an example of a composite frame that includes a dedicated FMIAdapter slot.
+To send an event to a controller model (represented by slot \emph{Controller}), the corresponding simulation event definition (according to the naming convention in Section~\ref{sec:naming_convention:sim_evt}) would have to refer to the name of this specific slot and a parameter of the model associated to it.
+See Section~\ref{sec:examples:rmssim} for more details on this example.
+
+\subsubsection*{Retrieving outputs}
+
+For retrieving outputs from an RMS simulation, object parameters can be accessed directly (just like in the case of quasi-static steady-state simulations).
+
+
+\begin{figure}[h!]
+\vspace*{1em}
+\centering{\includegraphics[width=0.98\textwidth]{fmiadapter_model_definition}}
+\caption{Block definition of compiled \dslmodel FMIAdapter.}
+\label{fig:fmiadapter_model_definition}
+\end{figure}
+
+\begin{figure}[h!]
+\vspace*{1em}
+\centering{\includegraphics[width=0.6\textwidth]{fmiadapter_slot}}
+\caption{Example of slot definition for \dslmodel FMIAdapter.}
+\label{fig:fmiadapter_slot}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\vspace*{2em}
+\centering{\includegraphics[width=0.9\textwidth]{fmiadapterconfig_composite_frame}}
+\caption{Example of a composite frame including \dslmodel FMIAdapter.}
+\label{fig:fmiadapterconfig_composite_frame}
+\end{figure}
+
+
+\subsection{Exporting models for RMS simulation}
+
+In order to create an FMU from a PFD file that is intended for RMS simulation, a \python script has to be executed from the command prompt window (please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this).
+Open the command prompt window and execute the script \texttt{powerfactory\_fmu\_create.py}:
+
+\begin{verbatim}
+python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
+  -m model_id -p pfd_file -i input_var_file -o output_var_file
+  -r step-size [-d pf_install_dir] [additional_file_1 ... ]
+  [var1=start_val1 ...]
+\end{verbatim}
+
+The path to the \fmipp \pf FMU export utility directory \verb!<path_to_pf_fmu_dir>! may be relative or absolute.
+Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
+  
+\textit{Mandatory input arguments}:
+\begin{itemize}
+  \item \verb!-m, --model-id!: specify FMU model identifier
+  \item \verb!-p, --pfd-file!: path to PowerFactory PFD file
+  \item \verb!-i, --input-var-file!: specify file containing list of input variable names
+  \item \verb!-o, --output-var-file!: specify file containing list of output variable names
+  \item \verb!-r, --rms-sim!: specify the integrator step size in seconds
+\end{itemize}
+\textit{Optional input arguments}:
+\begin{itemize}
+  \item \verb!-h, --help!: display the help screen
+  \item \verb!-v, --verbose!: turn on log messages
+  \item \verb!-l, --litter!: do not clean-up intermediate files
+  \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+\end{itemize}
+Files containing lists of input and output variable names are expected to be in clear text, listing exactly one valid variable name per line.
+As explained in Section~\ref{sec:naming_convention}, variable names are supposed to be of the form \texttt{EvtParam.<slot-name>.<param-name>} (for input simulation events) or \texttt{<obj-type>.<obj-name>.<param-name>} (for output object parameters).
+
+Additional files may be specified that will be automatically copied to the FMU. The specified files paths may be absolute or relative.
+
+Furthermore, start values for variables may be defined (referring to object parameters and simulation events). For instance, to set a variable with the name \texttt{ElmLod.TestLoad.plini} to a value of 12.34, specify \texttt{ElmLod.TestLoad.plini=12.34} in the command line as optional argument.
+
+Section~\ref{sec:examples:rmssim} gives a concrete example of how to export a model for RMS simulation as an FMU.
+

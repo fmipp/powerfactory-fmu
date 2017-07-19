@@ -1,0 +1,10 @@
+\chapter{Writing additional output}
+\label{sec:additional_output}
+
+When using a \pf model within a co-simulation, it is possible to write additional simulation results from \pf that are not specified as FMU outputs.
+To do so, simply add text files with file extension \texttt{.info} as additional files, containing a list of variable names in clear text, listing exactly one valid variable name per line (just like the input input/output variable name lists for creating an FMU).
+For each of these files, a CSV file with the same name (but file extension \texttt{.csv}) will be generated during a simulation run, containing the simulated values of the variables defined in the \texttt{.info} file.
+For instance, adding an additional file called \texttt{extra\_data.info} will at simulation time result in the creation of a file called \texttt{extra\_data.csv}.
+
+\subsection*{Note:}
+These \texttt{.info} files have to be specified as additional files when creating an FMU!

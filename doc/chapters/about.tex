@@ -7,7 +7,8 @@
 
 The \href{http://powerfactory-fmu.sourceforge.net}{\fmipp \pf FMU Export Utility} is a stand-alone tool for exporting FMUs for Co-Simulation (\href{https://www.fmi-standard.org/}{FMI Version~1.0}) from \href{http://www.digsilent.com/}{DIgSILENT~\pf} models. It is open-source (see license in Section~\ref{pf_fmu_license}) and \href{http://powerfactory-fmu.sourceforge.net}{freely available}. It is based on code from the \href{http://fmipp.sourceforge.net}{FMI++ library} (see license in Section~\ref{fmipp_license}) and the \href{http://www.boost.org/}{Boost C++ libraries} (see license in Section~\ref{boost_license}).
 
-The \fmipp \pf FMU Export Utility provides a \href{https://www.python.org/}{\python} script that creates FMUs from certain \pf models, including the XML model description and shared libraries. Additional files (e.g., time series files) and start values for exported variables can be specified.
-
-Currently only steady-state simulation are supported, where the system’s evolution with respect to time comprises a series of load flow snapshots.
-RMS simulations are planned to be supported in the future.
+The \fmipp \pf FMU Export Utility provides a \href{https://www.python.org/}{\python} script that creates FMUs from certain \pf models, including the XML model description and shared libraries. Additional files (e.g., time series files) and start values for exported variables can be specified. Currently, two types of simulation are supported:
+\begin{itemize}
+  \item \emph{quasi-static steady-state simulations}: the power system's evolution with respect to time is captured by a series of load flow snapshots
+  \item \emph{RMS simulations}: calculates time-dependent dynamics of electromechanical models, including control devices
+\end{itemize}

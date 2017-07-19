@@ -1,0 +1,52 @@
+% Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+% REM All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
+
+\chapter{FMI-Compliant Naming Convention}
+\label{sec:naming_convention}
+
+An FMI-compliant naming convention is needed that allows to refer to the input variables, output variables and parameters of a \pf model in an unambiguous way (e.g., in the FMI model description).
+The \fmipp \pf FMU export utility provides two naming conventions:
+\begin{itemize}
+
+  \item \emph{Object parameters}: In \pf, all elements (e.g., loads, lines, transformers ) of an electrical network are represented by objects.
+  The values of calculation parameters of theses objects (e.g., power consumption, voltage, loading) can be accessed as output variables.
+  Their values can also be directly accessed and changed as inputs for quasi-static steady-state simulations.
+  See Section~\ref{sec:naming_convention:obj_param} for more details.
+
+  \item \emph{Simulation events}: In RMS simulations, the object parameters cannot be directly accessed to provide input to the simulated model.
+  Instead, a simulation event can be sent to a user-defined \dslmodel, which applies the corresponding changes at run-time.
+  See Section~\ref{sec:naming_convention:sim_evt} for more details.
+\end{itemize}
+
+
+\section{Naming convention for object parameters}
+\label{sec:naming_convention:obj_param}
+
+Referring to an object parameter is done by concatenating the parameter's name with the associated object's type and name in the following way:
+\begin{verbatim}
+FMI compliant parameter name = <obj-type>.<obj-name>.<param-name>
+\end{verbatim}
+
+For instance, the parameter \texttt{plini} associated to a general load (object type \texttt{ElmLod}) called \texttt{Load} would be referred to as \texttt{ElmLod.Load.plini} in the model description.
+
+
+\section{Naming convention for simulation events}
+\label{sec:naming_convention:sim_evt}
+
+When using \pf in RMS simulation mode, events of type \texttt{EvtParam} can be sent as inputs to user-defined {\dslmodel}s.
+Such events can be specified by concatenating a composite frame's slot name with the parameter name defined in the associated \dslmodel (see Section~\ref{sec:export:create_model_rms} for details):
+\begin{verbatim}
+FMI compliant event name = EvtParam.<slot-name>.<param-name>
+\end{verbatim}
+
+For instance, assume that a composite frame (type \texttt{BlkDef}) defines a slot called \texttt{Controller}. When a composite model (type \texttt{ElmComp}) assigns to this slot a user-defined \dslmodel that contains a parameter called \texttt{pext}, an input event that changes this parameter would be referred to as \texttt{EvtParam.Controller.pext} in the model description.
+
+
+\section{Remarks}
+
+The following restrictions and recommendations apply for objects/slots/parameters defined in \pf models that are associated to input or output variables for the co-simulation interface:
+\begin{itemize}
+  \item The naming convention above requires to only use \emph{parameter names}, \emph{slot names} and \emph{object names} that \emph{do not contain periods} "." within the \pf model.
+  \item The name of objects and slots associated to input variables, output variable and parameters has to be \emph{unique within the model}.
+  \item It is recommended to \emph{avoid blanks} in in the names of such objects, and slots.
+\end{itemize}

@@ -7,14 +7,14 @@
 
 The \fmipp \pf FMU Export Utility is intended to run on Windows~7. The following applications need to be installed prior to installing the \fmipp \pf FMU Export Utility:
 \begin{itemize}
-  \item \href{http://www.digsilent.com/}{DIgSILENT~\pf}~2016~SP2~(32-bit)
+  \item \href{http://www.digsilent.com/}{DIgSILENT~\pfversion}
   \item \href{https://www.python.org/}{\python} (tested with \python~3.5)
-  \item \href{https://www.microsoft.com/en-us/download/details.aspx?id=44914}{Microsoft Visual Studio Express 2013}
+  \item \href{https://www.visualstudio.com/vs/older-downloads/}{Microsoft Visual Studio Express 2013}
 \end{itemize}
 
 \subsubsection*{Note:}
-The current version of the \fmipp \pf FMU Export Utility has been specifically compiled to work with \pf 2016 SP2.
-It will definitely fail to run with older versions, newer version might work (but have not been tested).
+The current version of the \fmipp \pf FMU Export Utility has been specifically compiled to work with \pfversion.
+It will very likely fail to run with older versions, newer version might work.
 
 
 \section{Installation}
@@ -38,7 +38,7 @@ python.exe powerfactory_fmu_install.py <pf_install_dir>
 \end{verbatim}
 where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf2016}).
 
-After successful installation, the \pf installation directory contains two new files, \texttt{digexdyn.dll} and \texttt{digexfun1.dll}.
+After successful installation, the \pf installation directory contains one new file called \texttt{fmiadapter.dll}. This is the DLL implementation of the compiled DSL model used for interacting with \pf in RMS simulations (see Section~\ref{\label{sec:export:create_model_rms}).
 
 
 \subsection*{Step~3: Updating the Windows system path}
