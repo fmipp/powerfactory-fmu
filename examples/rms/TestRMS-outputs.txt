@@ -1,6 +1,6 @@
 ; this list defines the outputs of the FMU
 
 ElmTr2.Transformer.m:P:buslv	; comments can be added like this ...
-ElmLod.Generation.m:Psum:bus1	; another comment
+ElmLod.Generation.m:I1:bus1		; another comment
 
 ; and yet another comment
