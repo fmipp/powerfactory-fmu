@@ -135,6 +135,9 @@ private:
 	/// Counter for sent RMS simulation input events.
 	unsigned int rmsEventCount_;
 
+	// /// Try to add PowerFactory installation directory to DLL search path.
+	// void addSearchPath( const ModelDescription* modelDescription );
+
 	/// Instantiate time advance mechanism.
 	bool instantiateTimeAdvanceMechanism( const ModelDescription* modelDescription );
 

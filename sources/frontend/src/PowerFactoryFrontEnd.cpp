@@ -38,8 +38,9 @@
 
 // Check for compilation with Visual Studio 2010 (required).
 #if ( _MSC_VER == 1800 )
-#include "windows.h"
+#include <Windows.h>
 #include <Lmcons.h>
+// #include <Shlwapi.h>
 #else
 #error This project requires Visual Studio 2013.
 #endif
@@ -347,6 +348,10 @@ PowerFactoryFrontEnd::instantiateSlave( const std::string& instanceName, const s
 
 	PowerFactory::setLogger( this );
 
+	// NOTE: Adding the search path here is too late, because the FMU DLL
+	// has to be linked with 'fmiadapter.dll' when it is being loaded!
+	//addSearchPath( &modelDescription );
+	
 	// All preliminary checks done, create the actual wrapper now.
 	try {
 		pf_ = PowerFactory::create();
@@ -555,6 +560,53 @@ PowerFactoryFrontEnd::getStringStatus( const fmi2StatusKind s, fmi2String* value
 {
 	return fmi2Fatal; /// \FIXME Replace dummy implementation.
 }
+
+
+/*
+void
+PowerFactoryFrontEnd::addSearchPath( const ModelDescription* modelDescription )
+{
+	// Check if vendor annotations are available.
+	using namespace ModelDescriptionUtilities;
+	if ( modelDescription->hasVendorAnnotations() )
+	{
+		// Extract current application name from MIME type.
+		string applicationName = modelDescription->getMIMEType().substr( 14 );
+		// Extract vendor annotations.
+		const Properties& vendorAnnotations = modelDescription->getVendorAnnotations();
+
+		// Check if vendor annotations according to current application are available.
+		if ( hasChild( vendorAnnotations, applicationName ) )
+		{
+			const Properties& annotations = vendorAnnotations.get_child( applicationName );
+			
+			if ( true == hasAttributes( annotations ) )
+			{
+				const Properties& attributes = getAttributes( annotations );
+
+				// Check if the XML attribute 'path' is available.
+				if ( true == hasChild( attributes, "path" ) )
+				{
+					string path = attributes.get<string>( "path" );				
+					char *bufferPath = new char[path.length() + 1];
+					strcpy( bufferPath, path.c_str() );
+
+					// Add installation path to DLL seatch path.
+					PathRemoveFileSpec( bufferPath );
+					SetDllDirectory( bufferPath );
+
+					logger( fmi2OK, "ADD-DLL-SEACH-PATH", path );
+					
+					return;
+				}
+			}
+		}
+	}	
+
+	string warning = "no information about PowerFactory installation directory available";
+	logger( fmi2Warning, "ADD-DLL-SEACH-PATH", warning );
+}
+*/
 
 
 bool

@@ -128,6 +128,9 @@ def generatePowerFactoryFMU(
 	# Input deck file.
 	model_description_footer = model_description_footer.replace( '__PFD_FILE_NAME__', os.path.basename( pfd_file_name ) )
 
+	# # PowerFactory installation directory.
+	# model_description_footer = model_description_footer.replace( '__PF_INSTALL_DIR__', pf_install_dir )
+
 	# Additional input files.
 	if ( 0 == len( optional_files ) ):
 		model_description_footer = model_description_footer.replace( '__ADDITIONAL_FILES__', '' )
