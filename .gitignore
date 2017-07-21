@@ -24,15 +24,3 @@ doc/powerfactory-fmu-doc.pdf
 doc/powerfactory-fmu-doc.ptc
 doc/powerfactory-fmu-doc.synctex.gz
 doc/powerfactory-fmu-doc.toc
-
-# ignore extra files from running CMake
-release/ALL_BUILD.*
-release/CMakeCache.txt
-release/CMakeFiles
-release/FMIPP_POWERFACTORY_FMU_EXPORT.*
-release/Release
-release/Win32
-release/ZERO_CHECK.*
-release/cmake_install.cmake
-release/libfmipp_fmu_frontend.*
-release/fmiadapter.*
