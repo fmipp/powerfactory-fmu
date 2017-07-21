@@ -101,6 +101,7 @@ required_binaries = [
     'binaries\\libboost_thread-vc120-mt-1_58.lib', # static BOOST Thread libarary
     'binaries\\libfmipp_fmu_frontend.lib', # static library containing pre-compiled parts of the front end
     'binaries\\fmiadapter.dll', # to be copied to PowerFactory's bin directory (e.g., C:\DIgSILENT\pf2017)
+    'binaries\\fmiadapter.lib', # static library containing pre-compiled parts of the front end
 ]
 
 # The compiled documentation in PDF format (not part of the repository).
