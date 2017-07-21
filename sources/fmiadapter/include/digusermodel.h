@@ -57,26 +57,29 @@ struct ModelDefinition {
 	const int m_numOutput;         // no. of output signals
 	const int m_numState;          // no. of state variables
 	const int m_numLimState;       // no. of limited state variables (DSL_limstate)
+	const int m_numPIcontrolConst; // no. of limited state variables (DSL_picontrol_const)
 	const int m_numParameter;      // no. of parameter
 	const int m_numInternalParam;  // no. of parameter
 	const int m_numInternalSig;    // no. of internal signals
 	const int m_numDisState;       // no. of discrete states
-	const int m_numDelay;          // no. of delays (DSL_delay)
+	const int m_numDelay;          // no. of delays (DSL_delay, DSL_lastvalue, DSL_movingavg)
 	const int m_numPicDrop;        // no. of picdrop (DSL_picdro)
 	const int m_numSelect;         // no. of selects (DSL_select)
 	const int m_numSelfix;         // no. of selfixes (DSL_selfix)
 	const int m_numLimit;          // no. of limits (DSL_lim)
+	const int m_numGradlimConst;   // no. of gradient limiter (DSL_gradlim_const)
 	const int m_numFlipFlop;       // no. of flipflops (DSL_flipflop and DSL_aflipflop)
 	const int m_numLookupArray;    // no. of look-up arrays
 	const int m_numLookupTable;    // no. of look-up tables
-	const int m_solver;            // solver type (not supported)");
-	const int m_interface;         // interface type (not supported)");
-	const int m_prediction;        // prediction type (not supported)");
-	const double m_integrationstep;// user-defined integration step (not supported)");
+	const int m_solver;            // solver type (not supported)
+	const int m_interface;         // interface type (not supported)
+	const int m_prediction;        // prediction type (not supported)
+	const double m_integrationstep;// user-defined integration step (not supported)
 	const SignalDescription* const m_inputSigInfo;
 	const SignalDescription* const m_outputSigInfo;
 	const SignalDescription* const m_stateSigInfo;
 	const SignalDescription* const m_limitStateSigInfo;
+	const SignalDescription* const m_piControlStateSigInfo;
 	const SignalDescription* const m_internalSigInfo;
 	const ParameterDescription* const m_paramInfo;
 	const ParameterDescription* const m_internalParaInfo;
@@ -138,6 +141,7 @@ typedef struct {
 	double* m_dsigdup;
 	short m_state;
 	int   m_control;
+	short m_const;
 } LimStateSignal;
 
 typedef struct {
@@ -147,16 +151,23 @@ typedef struct {
 	double m_dtset;    // internal (time --> state wait
 	short m_state;
 	int   m_control;
+	short m_const;
 } PicDropExpression;
 
 typedef struct {
 	double* m_din;   // in (first argument)
 	short m_state;
 	int   m_control;
+	double m_don;
+	double m_doff;
+	short m_const;
 } SelectExpression;
 
 typedef struct {
 	short m_state;
+	double m_don;
+	double m_doff;
+	short m_const;
 } SelfixExpression;
 
 typedef struct {
@@ -165,6 +176,7 @@ typedef struct {
 	double* m_dmax;  // dmax (third argument)
 	short m_state;
 	int   m_control;
+	short m_const;
 } LimitExpression;
 
 typedef struct {
@@ -176,12 +188,12 @@ typedef struct {
 typedef struct {
 	double* m_xval;  // x value
 	double* m_yval;  // y value
-  int m_nvals;       // no. of values
+	int m_nvals;      // no. of values
 	void* m_interpolation; // internal
 } LookupArray;
 
 typedef struct {
-	double** m_val;      // m_val[irow][icol]
+	double** m_val; // m_val[irow][icol]
 	double* m_valblock;
 	int m_ncols; // no. of columns (y-values)
 	int m_nrows; // no. of rows (x-values)
@@ -189,48 +201,109 @@ typedef struct {
 } LookupTable;
 
 typedef struct {
+	double* m_din;   // in (first argument) -> used in ctrl
+	double* m_dlim;  // out (after limiter) -> used in fs and ctrl
+	double m_dminint; // internal -> calculated in fs()
+	double m_dmaxint; // internal -> calculated in fs()
+	double m_dmin;  // dmin (const) -> set via set_gradlim_const_limits in params
+	double m_dmax;  // dmax (const) -> set via set_gradlim_const_limits in params
+	int m_state;    // 1: normal operation
+	                // 2: max
+	                // 3: min
+	int m_control;  // 0: no state change; !=0: change to state ictrl
+	short m_const;
+} GradLimExpression;
+
+typedef struct {
+	double m_din;      // input variable ???
+	double* m_value;   // state signal (xs)
+	double* m_fsval;   // derivative (fsval)
+	double* m_dsigder;
+	double* m_dpi;
+	double m_dmin;  // dmin (const) -> set via set_picontrol_const_limits in params
+	double m_dmax;  // dmax (const) -> set via set_picontrol_const_limits in params
+	short m_state;
+	int   m_control;
+	short m_const;
+} PIcontrolSignal;
+
+
+typedef struct {
 	InputSignal*         m_inputSigs;      // input signals
 	OutputSignal*        m_outputSigs;     // output signals
 	InternalSignal*      m_internalSigs;   // internal signals
-	StateSignal*         m_stateSigs;      // state variable/derivatives
-	LimStateSignal*      m_limStateSigs;   // limited state signal/derivatives
+	StateSignal*         m_stateSigs;      // state variable signal
+	LimStateSignal*      m_limStateSigs;   // limited state signal
+	PIcontrolSignal*     m_piControlSigs;  // PI control signal
 	DiscreteState*       m_disStates;      // discrete states
-	DelaySignal*         m_delaySigs;      // delay signal
+	DelaySignal*         m_delaySigs;      // delay signal (lastvalue, delay, movingavg)
 	PicDropExpression*   m_picDropExpr;    // picdrop expression
 	SelectExpression*    m_selectExpr;     // select expression
 	SelfixExpression*    m_selfixExpr;     // selfix expression
 	LimitExpression*     m_limitExpr;      // limit expression
 	FlipFlopExpression*  m_flipFlopExpr;   // flipflop expression
+	GradLimExpression*   m_gradLimExpr;    // gradient limiter expression
 	double*              m_parameters;     // for parameter
 	double*              m_internalParams; // internal parameter 
 	LookupArray*         m_lookupArrays;   // look-up arrays
 	LookupTable*         m_lookupTables;   // look-up tables
 	void*                m_userData;       // user data
 	void*                m_pfModel;        // reference to internal PowerFactory Model
+	double               m_rms;            // RMS (1.), EMT (0.)
+	double               m_balanced;       // Balanced (1.), unbalanced (0.)
 } ModelInstance;
 
-// extern int set_delay_time(ModelInstance* pInstance,int index,double time);
+// extern int set_lastvalue_time(ModelInstance* pInstance, int index);
+// extern int set_delay_time(ModelInstance* pInstance, int index, double time);
+// extern int set_movingavg_time(ModelInstance* pInstance, int index, double time, double ti);
+
+// extern void init_lastvalue(ModelInstance* pInstance, int index, double din);
 // extern void init_delay(ModelInstance* pInstance, int index, double din);
+// extern void init_movingavg(ModelInstance* pInstance, int index, double din);
+
+// extern double eval_lastvalue(ModelInstance* pInstance, int index, double din);
 // extern double eval_delay(ModelInstance* pInstance, int index, double din);
+// extern double eval_movingavg(ModelInstance* pInstance, int index, double din);
 
-// extern void init_input(ModelInstance* pInstance,int index, double value);
-extern void init_output(ModelInstance* pInstance,int index, double value);
+// extern void init_input(ModelInstance* pInstance, int index, double value);
+extern void init_output(ModelInstance* pInstance, int index, double value);
 
-// extern void init_limstate(ModelInstance* pInstance, int index, double din, double dmin, double dmax);
+// extern void init_limstate(ModelInstance* pInstance, int index, double dstate, double dmin, double dmax);
 // extern double eval_limstate(ModelInstance* pInstance, int index, double dmin, double dmax);
 // extern void upd_limstate(ModelInstance* pInstance, int index, double dval);
+
+// extern int set_limstate_const_limits(ModelInstance* pInstance, int index, double dmin, double dmax);
+// extern void init_limstate_const(ModelInstance* pInstance, int index, double dstate);
+// extern double eval_limstate_const(ModelInstance* pInstance, int index);
+// extern void upd_limstate_const(ModelInstance* pInstance, int index, double dval);
 
 // extern void init_picdro(ModelInstance* pInstance, int index, double din, double dTpick, double dTdrop);
 // extern double eval_picdro(ModelInstance* pInstance, int index, double din, double dTpick, double dTdrop);
 
+// extern int set_picdro_const_times(ModelInstance* pInstance, int index, double dTpick, double dTdrop);
+// extern void init_picdro_const(ModelInstance* pInstance, int index, double din);
+// extern double eval_picdro_const(ModelInstance* pInstance, int index, double din);
+
 // extern void init_select(ModelInstance* pInstance, int index, double din);
 // extern double eval_select(ModelInstance* pInstance, int index, double din, double don, double doff);
+
+// extern int set_select_const_expressions(ModelInstance* pInstance, int index, double don, double doff);
+// extern void init_select_const(ModelInstance* pInstance, int index, double din);
+// extern double eval_select_const(ModelInstance* pInstance, int index, double din);
 
 // extern void init_selfix(ModelInstance* pInstance, int index, double din);
 // extern double eval_selfix(ModelInstance* pInstance, int index, double din, double don, double doff);
 
+// extern int set_selfix_const_expressions(ModelInstance* pInstance, int index, double don, double doff);
+// extern void init_selfix_const(ModelInstance* pInstance, int index, double din);
+// extern double eval_selfix_const(ModelInstance* pInstance, int index, double din);
+
 // extern void init_lim(ModelInstance* pInstance, int index, double din, double dmin, double dmax);
 // extern double eval_lim(ModelInstance* pInstance, int index, double din, double dmin, double dmax);
+
+// extern int set_lim_const_limits(ModelInstance* pInstance, int index, double dmin, double dmax);
+// extern void init_lim_const(ModelInstance* pInstance, int index, double din);
+// extern double eval_lim_const(ModelInstance* pInstance, int index, double din);
 
 // // flipflop(boolset,boolreset)
 extern void init_flipflop(ModelInstance* pInstance, int index, double dset, double dreset);
@@ -239,6 +312,17 @@ extern double eval_flipflop(ModelInstance* pInstance, int index, double dset, do
 // // aflipflop(x,boolset,boolreset)
 // extern void init_aflipflop(ModelInstance* pInstance, int index, double din, double dset, double dreset);
 // extern double eval_aflipflop(ModelInstance* pInstance, int index, double din, double dset, double dreset);
+
+// // pi-control (const) 
+// extern int set_picontrol_const_limits(ModelInstance* pInstance, int index, double dmin, double dmax);
+// extern void init_picontrol_const(ModelInstance* pInstance, int index, double dstate, double din);
+// extern double eval_picontrol_const(ModelInstance* pInstance, int index, double din);
+// extern void upd_picontrol_const(ModelInstance* pInstance, int index, double dval);
+
+// // gradient limiter (const)
+// extern int set_gradlim_const_limits(ModelInstance* pInstance, int index, double dmin, double dmax);
+// extern void init_gradlim_const(ModelInstance* pInstance, int index, double din);
+// extern double eval_gradlim_const(ModelInstance* pInstance, int index, double din);
 
 // extern void print_model_link(ModelInstance* pInstance);
 // extern void emit_fault(ModelInstance* pInstance, const char* evtname, const char* evtstr, int trigcount);

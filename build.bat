@@ -41,7 +41,7 @@ REM Define necessary Boost libraries.
 SET BOOST_LIBRARIES=libboost_filesystem-vc120-mt-1_58.lib libboost_system-vc120-mt-1_58.lib libboost_thread-vc120-mt-1_58.lib
 
 REM Define library containing implementation of the PF API Value class.
-SET PF_API_VALUE_LIB=%PF_INSTALL_DIR%\Api\include\digapivalue.lib
+SET PF_API_VALUE_LIB=%PF_INSTALL_DIR%\Api\lib\VS2013\digapivalue.lib
 
 ECHO ###### FMI functions ###### >> %LOG_FILE%
 

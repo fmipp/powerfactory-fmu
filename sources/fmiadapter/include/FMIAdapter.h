@@ -12,12 +12,12 @@
 
 // DLL info for DSL model definition
 #define DESCRIPTION "FMIAdapter"
-#define VERSION "0.1"
+#define VERSION "0.1 (2017 SP3)"
 #define CREATED "11.07.2017"
 #define AUTHOR "Edmund Widl"
 #define COMPANY "AIT Austrian Institute of Technology GmbH"
 #define COPYRIGHT "AIT Austrian Institute of Technology GmbH"
-#define CHECKSUM "3A3F-8C8F-C2E5-5EEF"
+#define CHECKSUM "7D6F-F3C2-B3F1-49C8"
 
 // Define size of character arrays used for retrieving events from the queue.
 #define LENNAME 30

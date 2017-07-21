@@ -65,16 +65,18 @@ struct ModelDefinition g_modelDefinition = {
 	0,           // no. of input signals
 	1,           // no. of output signals
 	0,           // no. of state variables
-	0,           // no. of limited state variables
+	0,           // no. of limited state variables (DSL_limstate)
+	0,           // no. of limited state variables (DSL_picontrol_const)
 	0,           // no. of parameter
 	0,           // no. of internal parameter
 	0,           // no. of internal signals
 	0,           // no. of discrete states
-	0,           // no. of delays
+	0,           // no. of delays (DSL_delay, DSL_lastvalue, DSL_movingavg)
 	0,           // no. of picdrops
 	0,           // no. of selects
 	0,           // no. of selfixes
 	0,           // no. of limits
+	0,           // no. of gradient limiter (DSL_gradlim_const)
 	1,           // no. of flipflops
 	0,           // no. of look-up arrays
 	0,           // no. of look-up tables
@@ -84,6 +86,7 @@ struct ModelDefinition g_modelDefinition = {
 	0.,          // user-defined integration step (not supported)
 	NULL,
 	g_outputSignals,
+	NULL,
 	NULL,
 	NULL,
 	NULL,
@@ -121,7 +124,7 @@ int Initialise( ModelInstance* pInstance, double tnow )
 
 	// Delay any event scheduled at the very beginning to the first integrator step.
 	veto_trigger = rmsSimEventQueueIsEmpty() ? false : true;
-	
+
 	return 1;
 }
 
