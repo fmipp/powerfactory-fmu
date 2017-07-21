@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE( test_power_factory_fmu_faulty_mime_type_and_model_descript
 
 	// Check if the instantiation issued a warning due to the unexpected MIME type.
 	BOOST_REQUIRE_MESSAGE( 1 == iWarning,
-			       "exactly one message with status 'fmiWaring' should have been issued " );
+			       "exactly two message with status 'fmiWarning' should have been issued " );
 	BOOST_REQUIRE_MESSAGE( 0 == lastWarningCategory.compare( "MIME-TYPE" ),
 			       "the category of the last issued message is expected to be 'MIME-TYPE'" );
 
