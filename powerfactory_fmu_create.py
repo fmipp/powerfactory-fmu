@@ -197,19 +197,19 @@ def generatePowerFactoryFMU(
 
 	# Check if batch file for build process exists.
 	build_process_batch_file = pf_fmu_root_dir + '\\build.bat'
-	if ( False == os.path.isfile( build_process_batch_file ) ):
+	if ( False == isFileCaseSensitive( build_process_batch_file ) ):
 		_print( '\n[ERROR] Could not find file', build_process_batch_file )
 		raise Exception( 17 )
 
 	# Compile FMU shared library.
 	for file_name in glob.glob( fmi_model_identifier + '.*' ):
 		if not ".pfd" in file_name: os.remove( file_name ) # Do not accidentaly remove the deck file!
-	if ( True == os.path.isfile( 'fmiFunctions.obj' ) ): os.remove( 'fmiFunctions.obj' )
+	if ( True == isFileCaseSensitive( 'fmiFunctions.obj' ) ): os.remove( 'fmiFunctions.obj' )
 	build_process = subprocess.Popen( [build_process_batch_file, fmi_model_identifier, pf_install_dir ] )
 	stdout, stderr = build_process.communicate()
 
 	# Check if batch script has executed successfully.
-	if ( False == os.path.isfile( fmu_shared_library_name ) ):
+	if ( False == isFileCaseSensitive( fmu_shared_library_name ) ):
 		_print( '\n[ERROR] Not able to create shared library:', fmu_shared_library_name )
 		raise Exception( 18 )
 
@@ -231,12 +231,12 @@ def generatePowerFactoryFMU(
 	shutil.copy( fmu_shared_library_name, binaries_dir ) # FMU DLL.
 
 	# Create ZIP archive.
-	if ( True == os.path.isfile( fmi_model_identifier + '.zip' ) ):
+	if ( True == isFileCaseSensitive( fmi_model_identifier + '.zip' ) ):
 		os.remove( fmi_model_identifier + '.zip' )
 	shutil.make_archive( fmi_model_identifier, 'zip', fmi_model_identifier )
 	
 	# Finally, create the FMU!!!
-	if ( True == os.path.isfile( fmi_model_identifier + '.fmu' ) ):
+	if ( True == isFileCaseSensitive( fmi_model_identifier + '.fmu' ) ):
 		os.remove( fmi_model_identifier + '.fmu' )
 	os.rename( fmi_model_identifier + '.zip', fmi_model_identifier + '.fmu' )
 	
@@ -317,6 +317,16 @@ def retrieveLabelsFromFile( file_name, labels ):
 			else:
 				_print( '\n[ERROR]', line, 'is not a valid variable name' )
 				sys.exit(8)
+
+
+# Helper function. Case-sensitive check for file names.
+def isFileCaseSensitive( path ):
+	_print( path )
+	if not os.path.isfile( path ): return False # exit early
+	directory, filename = os.path.split( path )
+	if not directory:
+		return filename in os.listdir()
+	return filename in os.listdir( directory )
 
 
 # Main function.
@@ -408,7 +418,7 @@ if __name__ == "__main__":
 		_print( '\n[ERROR] No PowerFactory PFD file specified!' )
 		usage()
 		sys.exit(3)
-	elif ( False == os.path.isfile( pfd_file_name ) ): # Check if specified PFD file is valid.
+	elif ( False == isFileCaseSensitive( pfd_file_name ) ): # Check if specified PFD file is valid.
 		_print( '\n[ERROR] Invalid PowerFactory PFD file:', pfd_file_name )
 		usage()
 		sys.exit(4)
@@ -416,7 +426,7 @@ if __name__ == "__main__":
 	# No PowerFactory install directory provided -> read from file (created by script 'powerfactory_fmu_install.py').
 	if ( None == pf_install_dir ):
 		pkl_file_name = pf_fmu_root_dir + '\\powerfactory_fmu_install.pkl'
-		if ( True == os.path.isfile( pkl_file_name ) ):
+		if ( True == isFileCaseSensitive( pkl_file_name ) ):
 			pkl_file = open( pkl_file_name, 'rb' )
 			pf_install_dir = pickle.load( pkl_file )
 			pkl_file.close()
@@ -439,7 +449,7 @@ if __name__ == "__main__":
 			value = start_value_pair[1].strip(' "\n\t')
 			if ( True == verbose ): _print( '[DEBUG] Found start value:', varname, '=', value )
 			start_values[varname] = value;
-		elif ( True == os.path.isfile( item ) ): # Check if this is an additional input file.
+		elif ( True == isFileCaseSensitive( item ) ): # Check if this is an additional input file.
 			optional_files.append( item )
 			if ( True == verbose ): _print( '[DEBUG] Found additional file:', item )
 		else:
