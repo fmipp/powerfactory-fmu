@@ -15,8 +15,8 @@ cmake_minimum_required(VERSION 2.8)
 project( PF_FMU_Export_Utility_Test )
 
 # Variables to be defined by the user.
-set( User_PF_ROOT_DIR "C:/DIgSILENT/pf2017" CACHE PATH "directory containing the implementation of the PF API" )
-set( User_PF_API_LIB_DIR "C:/DIgSILENT/pf2017/Api/lib/VS2013" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_ROOT_DIR "C:/DIgSILENT/pf2018" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_API_LIB_DIR "C:/DIgSILENT/pf2018/Api/lib/VS2013" CACHE PATH "directory containing the implementation of the PF API" )
 
 # Other project-specific variables.
 set( MODEL_IDENTIFIER "PF_FMU_Test" CACHE STRING "FMI model identfier" )

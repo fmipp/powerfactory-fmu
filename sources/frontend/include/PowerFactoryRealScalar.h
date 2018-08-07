@@ -37,8 +37,8 @@ public:
 
 	fmiValueReference valueReference_; ///< FMI value reference.
 
-	ScalarVariableAttributes::Causality causality_; ///< FMI variable causality.
-	ScalarVariableAttributes::Variability variability_; ///< FMI variable causality.
+	ScalarVariableAttributes::Causality::Causality causality_; ///< FMI variable causality.
+	ScalarVariableAttributes::Variability::Variability variability_; ///< FMI variable causality.
 
 
 	// Information related to PF:

@@ -14,7 +14,7 @@
 #define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 #endif
 
-// Check for compilation with Visual Studio 2010 (required).
+// Check for compilation with Visual Studio 2013 (required).
 #if ( _MSC_VER == 1800 )
 #include "windows.h"
 #else

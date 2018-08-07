@@ -7,6 +7,8 @@
  * \file ModelDescription.cpp
  */
 
+#include <algorithm>
+
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
 
@@ -92,6 +94,22 @@ ModelDescription::getModelAttributes() const
 }
 
 
+/// Get specific description for ModelExchange (FMI 2.0).
+const Properties&
+ModelDescription::getModelExchange() const
+{
+	return data_.get_child( "fmiModelDescription.ModelExchange" );
+}
+
+
+/// Get specific description for CoSimulation (FMI 2.0).
+const Properties&
+ModelDescription::getCoSimulation() const
+{
+	return data_.get_child( "fmiModelDescription.CoSimulation" );
+}
+
+
 // Get unit definitions.
 const Properties&
 ModelDescription::getUnitDefinitions() const
@@ -174,9 +192,27 @@ ModelDescription::getVersion() const
 		case fmi_2_0_me_and_cs:
 			version = 2;
 			break;
+		case invalid:
+			break;
 	}
 
 	return version;
+}
+
+
+/// Check if model description has ModelExchange element.
+bool
+ModelDescription::hasModelExchange() const
+{
+	return hasChild( data_, "fmiModelDescription.ModelExchange" );
+}
+
+
+/// Check if model description has CoSimulation element.
+bool
+ModelDescription::hasCoSimulation() const
+{
+	return hasChild( data_, "fmiModelDescription.CoSimulation" );
 }
 
 
@@ -244,6 +280,14 @@ ModelDescription::hasImplementation() const
 }
 
 
+// Check if model description has element VerndorAnnotations with nested element Tool.
+bool
+ModelDescription::hasVendorAnnotationsTool() const
+{
+	return hasChild( data_, "fmiModelDescription.VendorAnnotations.Tool" );
+}
+
+
 // Get model identifier from description.
 vector<string>
 ModelDescription::getModelIdentifier() const
@@ -279,6 +323,13 @@ ModelDescription::getModelIdentifier() const
 	return vector<string>();
 }
 
+bool 
+ModelDescription::hasModelIdentifier(const std::string& modelIdentifier) const
+{
+	std::vector<std::string> ids = getModelIdentifier();
+	auto it = std::find( ids.begin(), ids.end(), modelIdentifier );
+	return (it != ids.end());
+}
 
 // Get GUID from description.
 string
@@ -343,12 +394,8 @@ ModelDescription::getNumberOfContinuousStates() const
 	if ( false == hasChild( data_, "fmiModelDescription.ModelStructure.Derivatives" ) )	return 0;
 
 	const Properties& derivatives = data_.get_child("fmiModelDescription.ModelStructure.Derivatives");
-	int cnt = 0;
-	BOOST_FOREACH( const Properties::value_type &v, derivatives ){
-		cnt++;
-		continue;
-	}
-	return cnt;
+
+	return derivatives.size();
 }
 
 

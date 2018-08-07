@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------
-# Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+# Copyright (c) 2015-2018, AIT Austrian Institute of Technology GmbH.
 # All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
 # -----------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.12.0)
 
 #
 # This project builds the PowerFactory FMI front end 
@@ -16,8 +16,8 @@ cmake_minimum_required(VERSION 2.8)
 
 
 # Variables to be defined by the user.
-set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2017/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
-set( User_PF_USER_MODEL_LIB_DIR "C:/DIgSILENT/pf2017/digusermodel/Release/VS2013" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
+set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2018/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_USER_MODEL_LIB_DIR "C:/DIgSILENT/pf2018/digusermodel/Release/VS2013" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
 
 
 # Define project.

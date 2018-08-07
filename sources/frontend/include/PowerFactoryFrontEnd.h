@@ -78,6 +78,8 @@ public:
 
 	virtual fmi2Status instantiateSlave( const std::string& instanceName, const std::string& fmuGUID,
 					const std::string& fmuLocation, fmi2Real timeout, fmi2Boolean visible );
+	virtual fmi2Status instantiate( const std::string& instanceName, const std::string& fmuGUID,
+					const std::string& fmuResourceLocation, fmi2Boolean visible );
 	virtual fmi2Status initializeSlave( fmi2Real tStart, fmi2Boolean stopTimeDefined, fmi2Real tStop );
 	virtual fmi2Status resetSlave();
 

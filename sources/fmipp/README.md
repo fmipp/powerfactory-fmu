@@ -1,1 +1,1 @@
-This folder contains a subset of the source code provided by the [FMI++ Library](http://fmipp.sourceforge.net "Link to FMI++ Library") (Git revision ID 3dc4e23).
+This folder contains a subset of the source code provided by the [FMI++ Library](http://fmipp.sourceforge.net "Link to FMI++ Library") (Git revision ID ce6c928).

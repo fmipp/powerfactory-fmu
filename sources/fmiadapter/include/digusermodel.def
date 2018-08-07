@@ -1,6 +1,6 @@
 LIBRARY  fmiadapter
 EXPORTS
-  GetInterfaceVersionV17 @1
+  GetInterfaceVersionV17X @1
   InitPFInterface @2
   GetModelDefinition @3
   InitInstance @4

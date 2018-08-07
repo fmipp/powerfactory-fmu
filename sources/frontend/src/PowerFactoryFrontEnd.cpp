@@ -36,7 +36,7 @@
 // PF API.
 #include "api/include/PowerFactory.h"
 
-// Check for compilation with Visual Studio 2010 (required).
+// Check for compilation with Visual Studio 2013 (required).
 #if ( _MSC_VER == 1800 )
 #include <Windows.h>
 #include <Lmcons.h>
@@ -119,7 +119,7 @@ PowerFactoryFrontEnd::setReal( const fmi2ValueReference& ref, const fmi2Real& va
 
 	const PowerFactoryRealScalar* scalar = itFind->second;
 	// Check if scalar is defined as input.
-	if ( scalar->causality_ != ScalarVariableAttributes::input )
+	if ( scalar->causality_ != ScalarVariableAttributes::Causality::input )
 	{
 		ostringstream err;
 		err << "setReal -> scalar is not an input variable, value reference = " << ref;
@@ -318,7 +318,7 @@ PowerFactoryFrontEnd::instantiateSlave( const std::string& instanceName, const s
 	// FMU's location has to be prepended to the URI accordingly.
 	string inputFileUrl = modelDescription.getEntryPoint();
 	string inputFilePath;
-	processURI( inputFileUrl, fmuLocationTrimmed );
+	HelperFunctions::processURI( inputFileUrl, fmuLocationTrimmed );
 	if ( false == HelperFunctions::getPathFromUrl( inputFileUrl, inputFilePath ) ) {
                 ostringstream err;
 		err << "invalid URL for input file (entry point): " << inputFileUrl;
@@ -462,6 +462,14 @@ PowerFactoryFrontEnd::initializeSlave( fmi2Real tStart, fmi2Boolean stopTimeDefi
 	}
 
 	return fmi2OK;
+}
+
+
+fmi2Status
+PowerFactoryFrontEnd::instantiate( const std::string& instanceName, const std::string& fmuGUID,
+						const std::string& fmuResourceLocation, fmi2Boolean visible )
+{
+	return fmi2Fatal; /// \FIXME Implement this function for FMI 2.0 support.
 }
 
 
@@ -899,7 +907,7 @@ initializeScalar( PowerFactoryRealScalar* scalar,
 	} else { // Model variable corresponds to RMS simulation input event.
 		scalar->apiDataObject_ = 0;
 		
-		if ( ScalarVariableAttributes::input != scalar->causality_ ) {
+		if ( ScalarVariableAttributes::Causality::input != scalar->causality_ ) {
 			ostringstream err;
 			err << "RMS simulation events have to be declared as input variables: FMIEvent." << scalar->parameterName_;
 			frontend->logger( fmi2Warning, "WARNING", err.str() );

@@ -5,7 +5,7 @@
 
 /// \file PowerFactoryExtraOutput.cpp
 
-// Check for compilation with Visual Studio 2010 (required).
+// Check for compilation with Visual Studio 2013 (required).
 #if ( _MSC_VER == 1800 )
 #include "windows.h"
 #else
