@@ -203,7 +203,7 @@ def generatePowerFactoryFMU(
 
 	# Compile FMU shared library.
 	for file_name in glob.glob( fmi_model_identifier + '.*' ):
-		if not ".pfd" in file_name: os.remove( file_name ) # Do not accidentaly remove the deck file!
+		if not ".pfd" in file_name: os.remove( file_name ) # Do not accidentaly remove the PFD file!
 	if ( True == isFileCaseSensitive( 'fmiFunctions.obj' ) ): os.remove( 'fmiFunctions.obj' )
 	build_process = subprocess.Popen( [build_process_batch_file, fmi_model_identifier, pf_install_dir ] )
 	stdout, stderr = build_process.communicate()
@@ -321,7 +321,6 @@ def retrieveLabelsFromFile( file_name, labels ):
 
 # Helper function. Case-sensitive check for file names.
 def isFileCaseSensitive( path ):
-	_print( path )
 	if not os.path.isfile( path ): return False # exit early
 	directory, filename = os.path.split( path )
 	if not directory:
