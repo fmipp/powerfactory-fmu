@@ -1,6 +1,20 @@
-\chapter{Writing additional output}
+\chapter{Writing results}
 \label{sec:additional_output}
 
+Two options to write results from PowerFactory to a file are supported.
+The first one is to use the result export utilities provided by PowerFactory itself.
+This is convenient as it supports the export of large result files with many result variables at the end of a simulation.
+The second option is to leave the output of results to the FMU itself.
+This can be useful to write and access results already during simulation runs.
+The two options are described in more detail in the following.
+
+\section{PowerFactory results export}
+At the end of a simulation or more precisely before the PowerFactory instance is closed, PowerFactory searches for the first results export object \texttt{ComRes} in the active study case and executes it.
+This allows the export of a specified result object \texttt{ElmRes} and therefore the export of multiple different variables.
+If no results export object is found or writing results failed a warning is issued.
+For further details on how to create a \texttt{ElmRes} or \texttt{ComRes} object please refer to the PowerFactory manual.
+
+\section{Writing additional output}
 When using a \pf model within a co-simulation, it is possible to write additional simulation results from \pf that are not specified as FMU outputs.
 To do so, simply add text files with file extension \texttt{.info} as additional files, containing a list of variable names in clear text, listing exactly one valid variable name per line (just like the input input/output variable name lists for creating an FMU).
 For each of these files, a CSV file with the same name (but file extension \texttt{.csv}) will be generated during a simulation run, containing the simulated values of the variables defined in the \texttt{.info} file.
