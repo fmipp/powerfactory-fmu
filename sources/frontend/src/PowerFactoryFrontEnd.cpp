@@ -66,6 +66,16 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 {
 	if ( 0 != pf_ ) {
 
+		// Write results 
+		api::v1::DataObject* dataObj = 0;
+		if ( pf_->Ok != pf_->getActiveStudyCaseObject( "ComRes", "", true, dataObj ) )
+		{
+			logger( fmi2Warning, "WARNING", "get result export object failed" );
+		} else {
+			if ( pf_->Ok != pf_->execute( dataObj, "Execute" ) )
+				logger( fmi2Warning, "WARNING", "writing results failed" );
+		}
+		
 		// Deactivate the project.
 		if ( pf_->Ok != pf_->deactivateProject() )
 			logger( fmi2Warning, "WARNING", "deactivation of project failed" );
