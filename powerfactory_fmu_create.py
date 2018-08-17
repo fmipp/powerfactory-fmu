@@ -32,7 +32,8 @@ def generatePowerFactoryFMU(
 		fmi_output_vars,
 		start_values,
 		optional_files,
-		pf_fmu_root_dir ):
+		pf_fmu_root_dir,
+		litter ):
 	"""Generate an FMU for PowerFactory.
 
     Keyword arguments:
@@ -46,7 +47,8 @@ def generatePowerFactoryFMU(
 	fmi_output_vars -- definition of output variable names (list of strings)
 	start_values -- definition of start values (map of strings to strings)
 	optional_files -- definition of additional files (list of strings)
-        pf_fmu_root_dir -- path to root dir of PF FMU Export Utility (string)
+    pf_fmu_root_dir -- path to root dir of PF FMU Export Utility (string)
+	litter -- do not clean-up intermediate files
 	"""
 	
 	# Template string for XML model description header.
