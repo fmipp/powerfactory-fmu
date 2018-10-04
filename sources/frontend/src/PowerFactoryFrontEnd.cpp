@@ -66,7 +66,7 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 {
 	if ( 0 != pf_ ) {
 
-		// Flush results (for consicutive powerflows)
+		// Flush results (for consecutive powerflows)
 		api::v1::DataObject* dataObj = 0;
 		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
 		{
@@ -90,15 +90,15 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 			logger( fmi2Warning, "WARNING", "deactivation of project failed" );
 
 		// Delete the project.
-		//string executeCmd = string( "del " ) + target_ + string( "\\" ) + projectName_;
-		//if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
-		//	logger( fmi2Warning, "WARNING", "could not delete project" );
+		string executeCmd = string( "del " ) + target_ + string( "\\" ) + projectName_;
+		if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
+			logger( fmi2Warning, "WARNING", "could not delete project" );
 
 		// Empty the recycle bin (delete the project once and forever).
 		// Note: For PF 15.0.3 string( "\\Recycle Bin\\*" ) was used."
-		//executeCmd = string( "del " ) + target_ + string( "\\RecBin\\*" );
-		//if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
-		//	logger( fmi2Warning, "WARNING", "could not empty recycle bin" );
+		executeCmd = string( "del " ) + target_ + string( "\\RecBin\\*" );
+		if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
+			logger( fmi2Warning, "WARNING", "could not empty recycle bin" );
 
 		// Exit PowerFactory.
 		if ( pf_->Ok != pf_->execute( "exit" ) )
@@ -472,7 +472,17 @@ PowerFactoryFrontEnd::initializeSlave( fmi2Real tStart, fmi2Boolean stopTimeDefi
 		logger( fmi2Discard, "DISCARD", "power flow calculation not valid" );
 		return fmi2Discard;
 	}
-
+	
+	// Write results - only necessary for consecutive power flows
+	api::v1::DataObject* dataObj = 0;
+	if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
+	{
+		logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
+	} else {
+		if ( pf_->execute( dataObj, "Write" ) != pf_->Ok )
+			logger( fmi2Warning, "WARNING", "writing results with ElmRes object failed" );
+	}
+		
 	// Write extra simulation results.
 	if ( false == extraOutput_->writeExtraOutput( tStart, pf_ ) ) {
 		string err( "not able to write extra simulation results" );
@@ -535,7 +545,7 @@ PowerFactoryFrontEnd::doStep( fmi2Real comPoint, fmi2Real stepSize, fmi2Boolean 
 			return fmi2Discard;
 		}
 		
-		// Write results 
+		// Write results - only necessary for consecutive power flows
 		api::v1::DataObject* dataObj = 0;
 		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
 		{
