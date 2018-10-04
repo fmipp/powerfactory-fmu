@@ -66,8 +66,17 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 {
 	if ( 0 != pf_ ) {
 
-		// Write results 
+		// Flush results (for consicutive powerflows)
 		api::v1::DataObject* dataObj = 0;
+		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
+		{
+			logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
+		} else {
+			if ( pf_->execute( dataObj, "Flush" ) != pf_->Ok )
+				logger( fmi2Warning, "WARNING", "flushing results with ElmRes object failed" );
+		}
+		
+		// Export results 
 		if ( pf_->Ok != pf_->getActiveStudyCaseObject( "ComRes", "", true, dataObj ) )
 		{
 			logger( fmi2Warning, "WARNING", "get result export object failed" );
@@ -81,15 +90,15 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 			logger( fmi2Warning, "WARNING", "deactivation of project failed" );
 
 		// Delete the project.
-		string executeCmd = string( "del " ) + target_ + string( "\\" ) + projectName_;
-		if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
-			logger( fmi2Warning, "WARNING", "could not delete project" );
+		//string executeCmd = string( "del " ) + target_ + string( "\\" ) + projectName_;
+		//if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
+		//	logger( fmi2Warning, "WARNING", "could not delete project" );
 
 		// Empty the recycle bin (delete the project once and forever).
 		// Note: For PF 15.0.3 string( "\\Recycle Bin\\*" ) was used."
-		executeCmd = string( "del " ) + target_ + string( "\\RecBin\\*" );
-		if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
-			logger( fmi2Warning, "WARNING", "could not empty recycle bin" );
+		//executeCmd = string( "del " ) + target_ + string( "\\RecBin\\*" );
+		//if ( pf_->Ok != pf_->execute( executeCmd.c_str() ) )
+		//	logger( fmi2Warning, "WARNING", "could not empty recycle bin" );
 
 		// Exit PowerFactory.
 		if ( pf_->Ok != pf_->execute( "exit" ) )
@@ -524,6 +533,16 @@ PowerFactoryFrontEnd::doStep( fmi2Real comPoint, fmi2Real stepSize, fmi2Boolean 
 		if ( pf_->isPowerFlowValid() != pf_->Ok ) {
 			logger( fmi2Discard, "DISCARD", "power flow calculation not valid" );
 			return fmi2Discard;
+		}
+		
+		// Write results 
+		api::v1::DataObject* dataObj = 0;
+		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
+		{
+			logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
+		} else {
+			if ( pf_->execute( dataObj, "Write" ) != pf_->Ok )
+				logger( fmi2Warning, "WARNING", "writing results with ElmRes object failed" );
 		}
 	}
 		
