@@ -519,7 +519,8 @@ if __name__ == "__main__":
 			fmi_output_vars,
 			start_values,
 			optional_files,
-			pf_fmu_root_dir )
+			pf_fmu_root_dir,
+			litter )
 	except Exception as e:
 		sys.exit( e.args[0] )
 	
