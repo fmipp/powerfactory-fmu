@@ -1,1 +1,0 @@
-This example is only intended for testing. It is not included into releases.
