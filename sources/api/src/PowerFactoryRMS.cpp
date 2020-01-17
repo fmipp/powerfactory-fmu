@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -19,7 +19,7 @@
 #include <boost/thread.hpp>
 
 // PF API.
-#include "v1/Api.hpp"
+#include "v2/Api.hpp"
 
 // Project includes.
 #include "api/include/PowerFactoryRMS.h"

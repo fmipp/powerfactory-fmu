@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -10,7 +10,7 @@
 #include "export/include/ScalarVariable.h"
 
 namespace api {
-	namespace v1 {
+	namespace v2 {
 		class DataObject;
 	}
 }
@@ -50,7 +50,7 @@ public:
 	/// This flag indicates whether this model variable is related to an input event (RMS simulation).
 	bool isRMSEvent_;
 	
-	api::v1::DataObject* apiDataObject_; ///< Link to PF object.
+	api::v2::DataObject* apiDataObject_; ///< Link to PF object.
 
 	/** 
 	 * Extract and parse information abaout PowerFactory variables. Variable names 

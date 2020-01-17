@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -125,7 +125,10 @@ private:
 	/// PowerFactory target.
 	std::string target_;
 
-	/// PowerFactory target.
+	/// Path to PowerFactory PFD file.
+	std::string inputFilePath_;
+
+	/// PowerFactory project name.
 	std::string projectName_;
 
 	/// FMU instance name.
@@ -148,6 +151,9 @@ private:
 
 	/// Extract and parse PowerFactory target.
 	bool parseTarget( const ModelDescription* modelDescription );
+
+	/// Extract and parse PFD file path (FMU entry point).
+	bool parseEntryPoint( const ModelDescription* modelDescription, const std::string& fmuLocation );
 
 public:
 	

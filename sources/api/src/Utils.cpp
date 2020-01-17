@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -14,15 +14,15 @@
 #define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 #endif
 
-// Check for compilation with Visual Studio 2013 (required).
-#if ( _MSC_VER == 1800 )
-#include "windows.h"
+// Check for compilation with Visual Studio 2017 or later (required).
+#if ( _MSC_VER >= 1910 )
+#include <windows.h>
 #else
-#error This project requires Visual Studio 2013.
+#error This project requires Visual Studio 2017 or later.
 #endif
 
 // PowerFactory API includes.
-#include "v1/Api.hpp"
+#include "v2/Api.hpp"
 
 // Boost includes.
 #include <boost/lexical_cast.hpp>

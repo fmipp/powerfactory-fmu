@@ -41,9 +41,18 @@ In the power network model, the time series is associated with the active power 
   \textcolor{black}{5;-0.1}
 \end{Verbatim}
 
-\subsubsection*{Executing the export script}
+\subsubsection*{Exporting the FMU}
 
-To export the network model as FMU, issue the following command in the command prompt window (directly from the directory containing the files):
+\begin{figure}[h!]
+\vspace*{1em}
+\centering{\includegraphics[width=\textwidth]{gui_create_trigger}}
+\caption{Input to the graphical user interface for exporting a model using external time series and triggers.}
+\label{fig:gui_create_trigger}
+\end{figure}
+
+To export the network model as FMU, specify the values in the graphical user interface as shown in Figure~\ref{fig:gui_create_trigger}.
+When ready, click the \texttt{Start} button to create the FMU.
+Alternatively, issue the following command in the command prompt window (directly from the directory containing the files):
 \begin{verbatim}
 python.exe ..\..\powerfactory_fmu_create.py -m PFTestTriggers \
   -i TestTriggers-inputs.txt -o TestTriggers-outputs.txt \
@@ -80,9 +89,18 @@ It contains the following files:
 In the power network model, a 1-dimensional characteristic is associated with the active power (parameter \emph{plini}) of the general load named \emph{Generation}.
 Also, the \pf model contains a \dplscript that takes the second of the year as input to set the simulation time (compare with the \dplscript shown in Section~\ref{sec:export:create_model_dplscript}).
 
-\subsubsection*{Executing the export script}
+\subsubsection*{Exporting the FMU}
 
-To export the network model as FMU, issue the following command in the command prompt window (directly from the directory  containing the files):
+\begin{figure}[h!]
+\vspace*{1em}
+\centering{\includegraphics[width=\textwidth]{gui_create_dpl_script}}
+\caption{Input to the graphical user interface for exporting a model using a \dplscript.}
+\label{fig:gui_create_dpl_script}
+\end{figure}
+
+To export the network model as FMU, specify the values in the graphical user interface as shown in Figure~\ref{fig:gui_create_dpl_script}.
+When ready, click the \texttt{Start} button to create the FMU.
+Alternatively, issue the following command in the command prompt window (directly from the directory  containing the files):
 \begin{verbatim}
 python.exe ..\..\powerfactory_fmu_create.py -m PFTestDPLScript \
   -i TestDPLScript-inputs.txt -o TestDPLScript-outputs.txt \
@@ -197,9 +215,18 @@ Depending on the settings of \pf (mainly the integrator step size), the event wi
 \label{fig:controllerinstance}
 \end{figure}
 
-\subsubsection*{Executing the export script}
+\subsubsection*{Exporting the FMU}
 
-To export the network model as FMU, issue the following command in the command prompt window (directly from the directory  containing the files):
+\begin{figure}[h!]
+\vspace*{1em}
+\centering{\includegraphics[width=\textwidth]{gui_create_rms}}
+\caption{Input to the graphical user interface for exporting a model for RMS simulation}
+\label{fig:gui_create_rms}
+\end{figure}
+
+To export the network model as FMU, specify the values in the graphical user interface as shown in Figure~\ref{fig:gui_create_rms}.
+When ready, click the \texttt{Start} button to create the FMU.
+Alternatively, issue the following command in the command prompt window (directly from the directory  containing the files):
 \begin{verbatim}
 python.exe ..\..\powerfactory_fmu_create.py -m PFTestRMS \
   -i TestRMS-inputs.txt -o TestRMS-outputs.txt \
@@ -229,15 +256,16 @@ When properly exported and used within a co-simulation framework (without any fu
 
 \begin{table}[h!]
 \centering{\begin{tabular}{|c|c|}
-    \hline 
-    simulation time & \texttt{ElmTerm.Node.m:u} \\ 
-    \hline \hline 
-    1~min & 1.026309 \\ \hline 
-    2~min & 1.020366 \\ \hline 
-    3~min & 1.014217 \\ \hline 
-    4~min & 1.007850 \\ \hline 
-    5~min & 1.001254 \\ \hline 
-  \end{tabular}}
+   \hline 
+   simulation time & \texttt{ElmTerm.Node.m:u} \\ 
+   \hline \hline 
+   0~min & 1.03205 \\ \hline 
+   1~min & 1.02631 \\ \hline 
+   2~min & 1.02036 \\ \hline 
+   3~min & 1.01422 \\ \hline 
+   4~min & 1.00785 \\ \hline 
+   5~min & 1.00125 \\ \hline
+\end{tabular}}
 \caption{Expected outputs from model with an external time series and a trigger.}
 \label{tab:examples:trigger_outputs}
 \end{table}
@@ -278,11 +306,11 @@ Please note that the synchronization points for setting inputs are not the same 
     \hline 
     simulation time & \texttt{ElmTr2.Transformer.m:P:buslv} & \texttt{ElmLod.Generation.m:I1:bus1} \\ 
     \hline \hline 
-    30~s & -0.895882 & 1.489078 \\ \hline 
-    90~s & 0.014029 & 0.732799 \\ \hline 
-    150~s & 0.054946 & 1.503625 \\ \hline 
-    210~s & 0.119682 & 2.307266 \\ \hline 
-    270~s & 0.203200 & 3.136092 \\ \hline
+    30~s & -0.89504 & 1.48945 \\ \hline 
+    90~s & 0.01403 & 0.73285 \\ \hline 
+    150~s & 0.05495 & 1.50371 \\ \hline 
+    210~s & 0.11969 & 2.30737 \\ \hline 
+    270~s & 0.20321 & 3.13618 \\ \hline
 \end{tabular}}
 \caption{Expected outputs from RMS simulation.}
 \label{tab:examples:rms_outputs}

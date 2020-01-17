@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -12,8 +12,8 @@
 
 // DLL info for DSL model definition
 #define DESCRIPTION "FMIAdapter"
-#define VERSION "0.1 (2017 SP3)"
-#define CREATED "11.07.2017"
+#define VERSION "0.1 (2019 SP4 x64)"
+#define CREATED "17.01.2020"
 #define AUTHOR "Edmund Widl"
 #define COMPANY "AIT Austrian Institute of Technology GmbH"
 #define COPYRIGHT "AIT Austrian Institute of Technology GmbH"

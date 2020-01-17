@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -25,7 +25,7 @@
 
 
 namespace api {
-	namespace v1 {
+	namespace v2 {
 		class DataObject;
 		class Api;
 		class Application;
@@ -33,9 +33,9 @@ namespace api {
 	class Value;
 }
 
-typedef api::v1::DataObject DataObject;
-typedef api::v1::Application Application;
-typedef api::v1::Api Api;
+typedef api::v2::DataObject DataObject;
+typedef api::v2::Application Application;
+typedef api::v2::Api Api;
 typedef api::Value Value;
 
 

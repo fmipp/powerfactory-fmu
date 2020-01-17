@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -12,7 +12,7 @@
 std::queue<RmsSimEventQueue::RmsSimEventInfo*> RmsSimEventQueue::eventQueue_ =
 	std::queue<RmsSimEventQueue::RmsSimEventInfo*>();
 
-boost::mutex RmsSimEventQueue::eventQueueMutex_ = boost::mutex();
+boost::mutex RmsSimEventQueue::eventQueueMutex_; // = boost::mutex();
 
 
 void

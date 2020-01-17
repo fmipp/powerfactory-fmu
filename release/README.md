@@ -3,3 +3,5 @@ This directory should contains all necessary items for testing and creating a ne
  - file *update_files_from_fmipp.py*: This script copies all relevant source files from a checked-out FMI++ repository.
  - file *create_release.py*: This script creates a new release of the FMI++ PowerFactory FMU Export Utility.
  - file *CMakeLists.txt*: CMake configuration file for building and testing the release version.
+ - file *powerfactory_fmu_install_gui.spec*: specification file for GUI
+ - file *powerfactory_fmu_create_gui.spec*: specification file for GUI

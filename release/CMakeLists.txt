@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------
-# Copyright (c) 2015-2018, AIT Austrian Institute of Technology GmbH.
+# Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
 # All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
 # -----------------------------------------------------------------------
 
@@ -16,8 +16,9 @@ cmake_minimum_required(VERSION 3.12.0)
 
 
 # Variables to be defined by the user.
-set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2018/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
-set( User_PF_USER_MODEL_LIB_DIR "C:/DIgSILENT/pf2018/digusermodel/Release/VS2013" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
+set( User_PF_API_INCLUDE_DIR "C:/DIgSILENT/pf2019/Api/include" CACHE PATH "directory containing the implementation of the PF API" )
+set( User_PF_API_VALUE_LIB "C:/DIgSILENT/pf2019/Api/lib/VS2017/digapivalue.lib" CACHE PATH "directory containing the implementation of library digapivalue.lib" )
+set( User_PF_USER_MODEL_LIB_DIR "C:/DIgSILENT/pf2019/digusermodel/Release/VS2017" CACHE PATH "directory containing the implementation of library 'ControllerLibrary.lib'" )
 
 
 # Define project.
@@ -77,39 +78,73 @@ endif ()
 # Include directories.
 include_directories( ${PROJECT_SOURCE_DIR}/../sources )
 include_directories( ${PROJECT_SOURCE_DIR}/../sources/fmipp )
+include_directories( ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/functions/fmi_v2.0 )
 include_directories( ${User_PF_API_INCLUDE_DIR} )
-
-
-# PowerFactory front end component library (pre-compiled basis for FMU DLL).
-add_library( libfmipp_fmu_frontend STATIC
-	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryFrontEnd.cpp
-	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryTimeAdvance.cpp
-	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryExtraOutput.cpp
-	${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryRealScalar.cpp
-	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactory.cpp
-	${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
-	${PROJECT_SOURCE_DIR}/../sources/api/src/Utils.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/FMIComponentFrontEndBase.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/HelperFunctions.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/ScalarVariable.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/ModelDescription.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/PathFromUrl.cpp
-)
 
 
 # DLL for user-defined PowerFactory DSL model (FMIAdapter).
 add_library( fmiadapter SHARED
-	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/include/digusermodel.def
-	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/digusermodel.c
-	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/FMIAdapter.c
-	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/RmsSimEventQueue.cpp
-	${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/accessRmsSimEventQueue.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmiadapter/include/digusermodel.def
+    ${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/digusermodel.c
+    ${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/FMIAdapter.c
+    ${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/RmsSimEventQueue.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmiadapter/src/accessRmsSimEventQueue.cpp
 )
 
 
 target_link_libraries( fmiadapter
-	Shlwapi
-	${CMAKE_DL_LIBS}
-	${Boost_LIBRARIES}
-	${User_PF_USER_MODEL_LIB_DIR}/ControllerLibrary.lib
+    Shlwapi
+    ${CMAKE_DL_LIBS}
+    ${Boost_LIBRARIES}
+    ${User_PF_USER_MODEL_LIB_DIR}/ControllerLibrary.lib
+)
+
+
+# PowerFactory front end component library (pre-compiled basis for FMU DLL).
+add_library( libfmipp_fmu_frontend STATIC
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryFrontEnd.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryTimeAdvance.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryExtraOutput.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryRealScalar.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactory.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/Utils.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/FMIComponentFrontEndBase.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/HelperFunctions.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/ScalarVariable.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/ModelDescription.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/PathFromUrl.cpp
+)
+
+
+# FMI 2.0: complete FMU DLL.
+add_library( fmi2 SHARED
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/functions/fmi_v2.0/fmi2Functions.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryFrontEnd.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryTimeAdvance.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryExtraOutput.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/frontend/src/PowerFactoryRealScalar.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactory.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/PowerFactoryRMS.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/api/src/Utils.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/FMIComponentFrontEndBase.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/HelperFunctions.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/export/src/ScalarVariable.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/ModelDescription.cpp
+    ${PROJECT_SOURCE_DIR}/../sources/fmipp/import/base/src/PathFromUrl.cpp
+)
+
+
+# Define compiler flags.
+target_compile_definitions( fmi2 PRIVATE
+   FRONT_END_TYPE=PowerFactoryFrontEnd
+   FRONT_END_TYPE_INCLUDE="frontend/include/PowerFactoryFrontEnd.h"
+)
+
+
+target_link_libraries( fmi2
+    ${User_PF_API_VALUE_LIB}
+    fmiadapter
+    Shlwapi
+    ${Boost_LIBRARIES}
 )

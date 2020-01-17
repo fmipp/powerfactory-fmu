@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -92,7 +92,7 @@ public:
 private:
 
 	/// Define collection for triggers (plus their individual time-scale).
-	typedef std::vector< std::pair<api::v1::DataObject*, fmi2Real> > TriggerCollection;
+	typedef std::vector< std::pair<api::v2::DataObject*, fmi2Real> > TriggerCollection;
 
 	/// List of all available triggers.
 	TriggerCollection triggers_;

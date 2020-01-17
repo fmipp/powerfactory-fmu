@@ -5,11 +5,11 @@
 
 \section{Software requirements}
 
-The \fmipp \pf FMU Export Utility is intended to run on Windows~7. The following applications need to be installed prior to installing the \fmipp \pf FMU Export Utility:
+The \fmipp \pf FMU Export Utility is intended to run on Windows~10. The following applications need to be installed prior to installing the \fmipp \pf FMU Export Utility:
 \begin{itemize}
   \item \href{http://www.digsilent.com/}{DIgSILENT~\pfversion}, including the additional package \emph{External C interface for dynamic models}
-  \item \href{https://www.python.org/}{\python} (tested with \python~3.5)
-  \item \href{https://www.visualstudio.com/vs/older-downloads/}{Microsoft Visual Studio Express 2013}
+  \item \href{https://www.python.org/}{\python}: only required when creating FMUs from the command line (tested with \python~3.7)
+  \item \href{https://www.visualstudio.com/vs/older-downloads/}{Microsoft Visual Studio Community 2017}: only required for generating FMUs according to FMI version 1.0
 \end{itemize}
 
 \subsubsection*{Note:}
@@ -30,13 +30,31 @@ To install the \fmipp \pf FMU Export Utility , proceed as follows:
 
 \subsection*{Step~2: Running the installation script}
 
-Installation requires to execute \python from the command prompt window, please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this.
+\subsubsection*{Installation via the graphical user interface}
+
+Switch to the installation directory and start program \texttt{powerfactory\_fmu\_install.exe} (double-click).
+This should bring up the window shown in Figure~\ref{fig:gui_install}.
+Provide the path to the \pf installation directory and press \textit{Start}.
+
+\begin{figure}[h!]
+%\vspace*{1em}
+\centering{\includegraphics[width=0.9\textwidth]{gui_install}}
+\vspace*{-2mm}
+\caption{Graphical user interface for installing the \fmipp \pf FMU Export Utility.}
+\label{fig:gui_install}
+\end{figure}
+
+
+\subsubsection*{Installation via the command line}
+
+Alternatively, installation can be done from the command prompt window by executing a \python script.
+Please refer to the \href{https://docs.python.org/3/faq/windows.html}{\python~FAQ} in case you need assistance with this.
 
 Open the command prompt window, change to the installation directory and execute the script \texttt{powerfactory\_fmu\_install.py}:
 \begin{verbatim}
 python.exe powerfactory_fmu_install.py <pf_install_dir>
 \end{verbatim}
-where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf2016}).
+where \texttt{<pf\_install\_dir>} is the path to your local \pf installation directory (for instance \texttt{C:\symbol{92}DIgSILENT\symbol{92}pf2019}).
 
 After successful installation, the \pf installation directory contains one new file called \texttt{fmiadapter.dll}. This is the DLL implementation of the compiled DSL model used for interacting with \pf in RMS simulations (see Section~\ref{\label{sec:export:create_model_rms}).
 

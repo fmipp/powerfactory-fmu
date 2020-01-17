@@ -1,15 +1,15 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
 /// \file PowerFactoryExtraOutput.cpp
 
-// Check for compilation with Visual Studio 2013 (required).
-#if ( _MSC_VER == 1800 )
+// Check for compilation with Visual Studio 2017 (required).
+#if ( _MSC_VER >= 1910 )
 #include "windows.h"
 #else
-#error This project requires Visual Studio 2013.
+#error This project requires Visual Studio 2017.
 #endif
 
 // standard includes
@@ -79,7 +79,7 @@ PowerFactoryExtraOutput::initializeExtraOutput( PowerFactory* pf )
 		logger( fmi2OK, "DEBUG", log );
 
 		// New output stream for extra outputs.
-		ofstream* outStream = new ofstream( outStreamName, ios_base::trunc );
+		std::ofstream* outStream = new std::ofstream( outStreamName, ios_base::trunc );
 		*outStream << "# time"; // First entry of output file description line.
 		string delimiter( ", " ); // Define delimiter for seperating data entries.
 
@@ -120,7 +120,7 @@ PowerFactoryExtraOutput::initializeExtraOutput( PowerFactory* pf )
 			}
 
 			// Search for PowerFactory object by class name and object name.
-			api::v1::DataObject* dataObj = 0;
+			api::v2::DataObject* dataObj = 0;
 			int check = -1;
 			check = pf->getCalcRelevantObject( scalar->className_, scalar->objectName_, dataObj );
 			if ( check != pf->Ok )

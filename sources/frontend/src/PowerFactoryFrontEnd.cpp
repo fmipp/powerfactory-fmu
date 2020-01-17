@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -36,13 +36,13 @@
 // PF API.
 #include "api/include/PowerFactory.h"
 
-// Check for compilation with Visual Studio 2013 (required).
-#if ( _MSC_VER == 1800 )
+// Check for compilation with Visual Studio 2017 (required).
+#if ( _MSC_VER >= 1910 )
 #include <Windows.h>
 #include <Lmcons.h>
 // #include <Shlwapi.h>
 #else
-#error This project requires Visual Studio 2013.
+#error This project requires Visual Studio 2017.
 #endif
 
 
@@ -67,7 +67,7 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 	if ( 0 != pf_ ) {
 
 		// Flush results (for consecutive powerflows)
-		api::v1::DataObject* dataObj = 0;
+		api::v2::DataObject* dataObj = 0;
 		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
 		{
 			logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
@@ -108,8 +108,8 @@ PowerFactoryFrontEnd::~PowerFactoryFrontEnd()
 		BOOST_FOREACH( RealMap::value_type& v, realScalarMap_ )
 			delete v.second;
 
-		/// \FIXME deallocation of object of type PowerFactory causes the program to halt
-		//delete pf_;
+		// Delete the PowerFactory API.
+		delete pf_;
 	}
 	
 	if ( 0 != time_ ) delete time_;
@@ -333,15 +333,8 @@ PowerFactoryFrontEnd::instantiateSlave( const std::string& instanceName, const s
 		return fmi2Fatal;
 	}
 
-	// The input file URI may start with "fmu://". In that case the
-	// FMU's location has to be prepended to the URI accordingly.
-	string inputFileUrl = modelDescription.getEntryPoint();
-	string inputFilePath;
-	HelperFunctions::processURI( inputFileUrl, fmuLocationTrimmed );
-	if ( false == HelperFunctions::getPathFromUrl( inputFileUrl, inputFilePath ) ) {
-                ostringstream err;
-		err << "invalid URL for input file (entry point): " << inputFileUrl;
-		logger( fmi2Fatal, "URL", err.str() );
+	if ( false == parseEntryPoint( &modelDescription, fmuLocationTrimmed ) ) {
+		logger( fmi2Fatal, "PFD-FILE", "failed to parse PFD file location" );
 		return fmi2Fatal;
 	}
 
@@ -422,7 +415,7 @@ PowerFactoryFrontEnd::instantiateSlave( const std::string& instanceName, const s
 	pf_->execute( deleteCmd.c_str() );
 
 	// Import project file into PowerFactory.
-	const string importCmd = string( "pfdimport g_target=" ) + target_ + string( " g_file=" ) + inputFilePath;
+	const string importCmd = string( "pfdimport g_target=" ) + target_ + string( " g_file=" ) + inputFilePath_;
 	if ( pf_->Ok != pf_->execute( importCmd.c_str() ) )  {
 		logger( fmi2Fatal, "ABORT", "could not import project" );
 		return fmi2Fatal;
@@ -474,7 +467,7 @@ PowerFactoryFrontEnd::initializeSlave( fmi2Real tStart, fmi2Boolean stopTimeDefi
 	}
 	
 	// Write results - only necessary for consecutive power flows
-	api::v1::DataObject* dataObj = 0;
+	api::v2::DataObject* dataObj = 0;
 	if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
 	{
 		logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
@@ -498,7 +491,22 @@ fmi2Status
 PowerFactoryFrontEnd::instantiate( const std::string& instanceName, const std::string& fmuGUID,
 						const std::string& fmuResourceLocation, fmi2Boolean visible )
 {
-	return fmi2Fatal; /// \FIXME Implement this function for FMI 2.0 support.
+	// Trim FMU location path (just to be sure).
+	string fmuResourceLocationTrimmed = boost::trim_copy( fmuResourceLocation );
+	string fmuLocation;
+
+	// Check if last character of resources directory location is a separator.
+	// Then extract FMU location (assuming that the resources directory is a subdirectory of the unzipped FMU).
+	const string separator( "/" );
+	if ( 0 == separator.compare( fmuResourceLocationTrimmed.substr( fmuResourceLocationTrimmed.size() - 1 ) ) )
+	{
+		fmuLocation = fmuResourceLocationTrimmed.substr( 0, fmuResourceLocationTrimmed.size() - 11 );
+	} else {
+		fmuLocation = fmuResourceLocationTrimmed.substr( 0, fmuResourceLocationTrimmed.size() - 10 );
+	}
+
+	// Instantiate FMU.
+	return instantiateSlave( instanceName, fmuGUID, fmuLocation, numeric_limits<fmi2Real>::quiet_NaN(), visible );
 }
 
 
@@ -546,7 +554,7 @@ PowerFactoryFrontEnd::doStep( fmi2Real comPoint, fmi2Real stepSize, fmi2Boolean 
 		}
 		
 		// Write results - only necessary for consecutive power flows
-		api::v1::DataObject* dataObj = 0;
+		api::v2::DataObject* dataObj = 0;
 		if ( pf_->getActiveStudyCaseObject( "ElmRes", "", true, dataObj ) != pf_->Ok )
 		{
 			logger( fmi2Warning, "WARNING", "finding ElmRes object failed" );
@@ -661,72 +669,76 @@ PowerFactoryFrontEnd::instantiateTimeAdvanceMechanism( const ModelDescription* m
 {
 	// Check if vendor annotations are available.
 	using namespace ModelDescriptionUtilities;
-	if ( modelDescription->hasVendorAnnotations() )
+
+	string toolXmlTag;
+	if ( 1 == modelDescription->getVersion() ) toolXmlTag = modelDescription->getMIMEType().substr( 14 );
+	if ( 2 == modelDescription->getVersion() ) toolXmlTag = string( "FMI++Export" );
+
+	if ( true == modelDescription->hasVendorAnnotationsTool() )
 	{
-		// Extract current application name from MIME type.
-		string applicationName = modelDescription->getMIMEType().substr( 14 );
-		// Extract vendor annotations.
 		const Properties& vendorAnnotations = modelDescription->getVendorAnnotations();
-
-		// Check if vendor annotations according to current application are available.
-		if ( hasChild( vendorAnnotations, applicationName ) )
+		BOOST_FOREACH( const Properties::value_type &v, vendorAnnotations ) // Iterate vendor annotations.
 		{
-			const Properties& annotations = vendorAnnotations.get_child( applicationName );
-
-			// Count numbers of Trigger and DPLScript nodes.
-			unsigned int numTriggerNodes = annotations.count( "Trigger" );
-			unsigned int numDPLScriptNodes = annotations.count( "DPLScript" );
-			unsigned int numRmsSimNodes = annotations.count( "RMSSimulation" );
-			
-			if ( numRmsSimNodes > 1 ) {
-				// There must not be more than one RMS simulation setup.
-				logger( fmi2Fatal, "TIME-ADVANCE", "more than one RMS simulation setup defined" );
-				return false;
+			if ( v.first == "Tool" ) // Check if node describes a "Tool".
+			{
+				const Properties& toolAttributes = getAttributes( v.second );
+				string toolName = toolAttributes.get<string>( "name" );
+				if ( string::npos != toolName.find( toolXmlTag ) )
+				{
+					// Count numbers of Trigger and DPLScript nodes.
+					unsigned int numTriggerNodes = v.second.count( "Trigger" );
+					unsigned int numDPLScriptNodes = v.second.count( "DPLScript" );
+					unsigned int numRmsSimNodes = v.second.count( "RMSSimulation" );
+					
+					if ( numRmsSimNodes > 1 ) {
+						// There must not be more than one RMS simulation setup.
+						logger( fmi2Fatal, "TIME-ADVANCE", "more than one RMS simulation setup defined" );
+						return false;
+					}
+		
+					// Choose time advance mechanism.
+					if ( ( numTriggerNodes > 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 0 ) ) {
+						// Initialize trigger mechanism.
+						time_ = new TriggerTimeAdvance( this, pf_ );
+						logger( fmi2OK, "TIME-ADVANCE", "use triggers" );
+					} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes > 0 ) && ( numRmsSimNodes == 0 ) ) {
+						// Initialize DPL script mechanism.
+						time_ = new DPLScriptTimeAdvance( this, pf_ );
+						logger( fmi2OK, "TIME-ADVANCE", "use DPL script" );
+					} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 1 ) ) {
+						// Initialize RMS simulation.
+						time_ = new RMSTimeAdvance( this, pf_ );
+						logger( fmi2OK, "TIME-ADVANCE", "use RMS simulation" );
+					} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 0 ) ) {
+						// Neither triggers nor DPL scripts nor RMS simulation defined, issue message and abort.
+						logger( fmi2Fatal, "TIME-ADVANCE", "no time advance mechanism defined (triggers, DPL scipts, RMS simulation)" );
+						return false;
+					} else {
+						// Inconsistent setup.
+						ostringstream err;
+						err << "inconsistent setup: " << numTriggerNodes << " triggers, " 
+							<< numDPLScriptNodes << " DPL scripts, "
+							<< numRmsSimNodes << "RMS simulation setups";
+						logger( fmi2Fatal, "TIME-ADVANCE", err.str() );
+						return false;
+					}
+		
+					// Instantiate time advance mechanism.
+					if ( fmi2OK != time_->instantiate( v.second ) ) return false;
+					
+					return true;
+				}
 			}
-
-			// Choose time advance mechanism.
-			if ( ( numTriggerNodes > 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 0 ) ) {
-				// Initialize trigger mechanism.
-				time_ = new TriggerTimeAdvance( this, pf_ );
-				logger( fmi2OK, "TIME-ADVANCE", "use triggers" );
-			} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes > 0 ) && ( numRmsSimNodes == 0 ) ) {
-				// Initialize DPL script mechanism.
-				time_ = new DPLScriptTimeAdvance( this, pf_ );
-				logger( fmi2OK, "TIME-ADVANCE", "use DPL script" );
-			} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 1 ) ) {
-				// Initialize RMS simulation.
-				time_ = new RMSTimeAdvance( this, pf_ );
-				logger( fmi2OK, "TIME-ADVANCE", "use RMS simulation" );
-			} else if ( ( numTriggerNodes == 0 ) && ( numDPLScriptNodes == 0 ) && ( numRmsSimNodes == 0 ) ) {
-				// Neither triggers nor DPL scripts nor RMS simulation defined, issue message and abort.
-				logger( fmi2Fatal, "TIME-ADVANCE", "no time advance mechanism defined (triggers, DPL scipts, RMS simulation)" );
-				return false;
-			} else {
-				// Inconsistent setup.
-				ostringstream err;
-				err << "inconsistent setup: " << numTriggerNodes << " triggers, " 
-				    << numDPLScriptNodes << " DPL scripts, "
-					<< numRmsSimNodes << "RMS simulation setups";
-				logger( fmi2Fatal, "TIME-ADVANCE", err.str() );
-				return false;
-			}
-
-			// Instantiate time advance mechanism.
-			if ( fmi2OK != time_->instantiate( annotations ) ) return false;
-
-		} else {
-			string err( "vendor annotations contain no node called '" );
-			err += applicationName + string( "'");
-			logger( fmi2Fatal, "ABORT", err );
-			return false;
-		}
-
-	} else {
-		logger( fmi2Fatal, "ABORT", "no vendor annotations found in model description" );
+		} 
+		
+		string err( "vendor annotations contain no node with name attribute '" );
+		err += toolXmlTag + string( "'");
+		logger( fmi2Fatal, "ABORT", err );
 		return false;
 	}
 
-	return true;
+	logger( fmi2Fatal, "ABORT", "no vendor annotations with tool-specific record found in model description" );
+	return false;
 }
 
 
@@ -768,53 +780,79 @@ PowerFactoryFrontEnd::parseTarget( const ModelDescription* modelDescription )
 {
 	using namespace ModelDescriptionUtilities;
 
-	// Check if vendor annotations are available.
-	if ( modelDescription->hasVendorAnnotations() )
+	string toolXmlTag;
+	if ( 1 == modelDescription->getVersion() ) toolXmlTag = modelDescription->getMIMEType().substr( 14 );
+	if ( 2 == modelDescription->getVersion() ) toolXmlTag = string( "FMI++Export" );
+
+	if ( true == modelDescription->hasVendorAnnotationsTool() )
 	{
-		// Extract current application name from MIME type.
-		string applicationName = modelDescription->getMIMEType().substr( 14 );
-		// Extract vendor annotations.
 		const Properties& vendorAnnotations = modelDescription->getVendorAnnotations();
-
-		// Check if vendor annotations according to current application are available.
-		if ( hasChild( vendorAnnotations, applicationName ) )
+		BOOST_FOREACH( const Properties::value_type &v, vendorAnnotations ) // Iterate vendor annotations.
 		{
-			if ( hasChildAttributes( vendorAnnotations, applicationName ) )
+			if ( v.first == "Tool" ) // Check if node describes a "Tool".
 			{
-				// Extract target from XML description.
-				const Properties& attributes =
-					getChildAttributes( vendorAnnotations, applicationName );
+				const Properties& toolAttributes = getAttributes( v.second );
+				string toolName = toolAttributes.get<string>( "name" );
+				if ( string::npos != toolName.find( toolXmlTag ) )
+				{
+					if ( hasChild( v.second, "Executable" ) ) 
+					{
+						// Extract target from XML description.
+						const Properties& attributes = getChildAttributes( v.second, "Executable" );
 
-				if ( hasChild( attributes, "target" ) ) {
-					target_ = attributes.get<string>( "target" );
+						if ( hasChild( attributes, "target" ) ) {
+							target_ = attributes.get<string>( "target" );
+							return true;
+						}
+					}
+
+					// Alternatively, get current user name via WIN32 API and use it as target.
+					char username[UNLEN+1];
+					DWORD username_len = UNLEN+1;
+					GetUserName( username, &username_len );
+					target_ = string( "\\" ) + username;
+		
+					ostringstream log;
+					log << "no project target defined in vendor annotations, "
+						<< "will use login name: \\" << username;
+					logger( fmi2OK, "TARGET", log.str() );
+
 					return true;
 				}
 			}
-
-			// Alternatively, get current user name via WIN32 API and use it as target.
-			char username[UNLEN+1];
-			DWORD username_len = UNLEN+1;
-			GetUserName( username, &username_len );
-			target_ = string( "\\" ) + username;
-
-			ostringstream log;
-			log << "no project target defined in vendor annotations, "
-			    << "will use login name: " << username;
-			logger( fmi2OK, "TARGET", log.str() );
-
-			return true;
-		} else {
-			ostringstream err;
-			err << "vendor annotations do not contain information specific to PowerFactory "
-			    << "(XML node '" << applicationName << "' is missing)";
-			logger( fmi2Fatal, "XML", err.str() );
 		}
-	} else {
-		string err( "no vendor annotations found in model description" );
-		logger( fmi2Fatal, "XML", err );
+		
+		ostringstream err;
+		err << "vendor annotations do not contain information specific to PowerFactory "
+		    << "(XML node '" << toolXmlTag << "' is missing)";
+		logger( fmi2Fatal, "XML", err.str() );
 	}
 
+	string err( "no vendor annotations with tool record found in model description" );
+	logger( fmi2Fatal, "XML", err );
 	return false;
+}
+
+
+bool
+PowerFactoryFrontEnd::parseEntryPoint( const ModelDescription* modelDescription, const string& fmuLocation )
+{
+	string inputFileUrl = modelDescription->getEntryPoint(); // FMI 1.0
+
+	if ( 0 == inputFileUrl.size() ) { // FMI 2.0
+		string preArguments;
+		string mainArguments;
+		string postArguments;
+		string executableUrl;
+		if ( false == parseAdditionalArguments( modelDescription, preArguments, mainArguments, postArguments, executableUrl, inputFileUrl ) ) {
+			logger( fmi2Fatal, "ABORT", "incompatible model description" );
+			return false;
+		}
+	}
+
+	HelperFunctions::processURI( inputFileUrl, fmuLocation );
+
+	return HelperFunctions::getPathFromUrl( inputFileUrl, inputFilePath_ );	
 }
 
 
@@ -865,11 +903,15 @@ PowerFactoryFrontEnd::setValue( const PowerFactoryRealScalar* scalar, const doub
 void
 PowerFactoryFrontEnd::logger( fmi2Status status, const string& category, const string& msg )
 {
-	if ( ( status == fmi2OK ) && ( fmi2False == loggingOn_ ) ) return;
+	if ( ( fmi2OK == status ) && ( fmi2False == loggingOn_ ) ) return;
 
-	fmiFunctions_->logger( static_cast<fmi2Component>( this ),
-			    instanceName_.c_str(), static_cast<fmiStatus>( status ),
-			    category.c_str(), msg.c_str() );
+	if ( 0 != fmiFunctions_ && 0 != fmiFunctions_->logger )
+		fmiFunctions_->logger( static_cast<fmiComponent>( this ), instanceName_.c_str(),
+			static_cast<fmiStatus>( status ), category.c_str(), msg.c_str() );
+
+	if ( 0 != fmi2Functions_ && 0 != fmi2Functions_->logger )
+		fmi2Functions_->logger( fmi2Functions_->componentEnvironment,
+			instanceName_.c_str(), status, category.c_str(), msg.c_str() );
 }
 
 
@@ -929,7 +971,7 @@ initializeScalar( PowerFactoryRealScalar* scalar,
 	scalar->variability_ = getVariability( attributes.get<string>( "variability" ) );
 
 	if ( false == scalar->isRMSEvent_ ) { // Model variable corresponds to standard PF object.
-		api::v1::DataObject* dataObj = 0;
+		api::v2::DataObject* dataObj = 0;
 		int check = -1;
 		// Search for PowerFactory object by class name and object name.
 		check = pf->getCalcRelevantObject( scalar->className_, scalar->objectName_, dataObj );

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -14,15 +14,16 @@
 #define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 #endif
 
-// Check for compilation with Visual Studio 2013 (required).
-#if ( _MSC_VER == 1800 )
-#include "windows.h"
+// Check for compilation with Visual Studio 2017 or later (required).
+#if ( _MSC_VER >= 1910 )
+#include <windows.h>
 #else
-#error This project requires Visual Studio 2013.
+#error This project requires Visual Studio 2017 or later.
 #endif
 
 // PowerFactory API includes.
-#include "v1/Api.hpp"
+#include "v2/Api.hpp"
+#include "v2/ExitError.hpp"
 
 // Project includes.
 #include "api/include/PowerFactory.h"
@@ -51,7 +52,7 @@ HINSTANCE PowerFactory::dllHandle_ = 0;
 
 
 PowerFactory* PowerFactory::create()
-{	
+{
 	if ( 0 != SmartValue::api ) {
 		std::string err( "instance of PowerFactory already exists, creation of multiple instances not allowed" );
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::create", err );
@@ -66,9 +67,19 @@ PowerFactory* PowerFactory::create()
 	}
 
 	CREATEAPI createApi =
-		reinterpret_cast<CREATEAPI>( GetProcAddress( static_cast<HINSTANCE__*>( dllHandle_ ), "CreateApiInstanceV1" ) );
+		reinterpret_cast<CREATEAPI>( GetProcAddress( static_cast<HINSTANCE__*>( dllHandle_ ), "CreateApiInstanceV2" ) );
 
-	Api* api = createApi( 0, 0, 0 );
+	Api* api = 0;
+
+	try {
+		api = createApi( 0, 0, 0 );
+	} catch ( const api::v2::ExitError& ex ) {
+		std::stringstream err;
+		err << "API instance creation failed with error code " << ex.GetCode() << std::endl;
+		logger( PowerFactoryLoggerBase::Error, "PowerFactory::create", err.str() );
+		throw;
+	}
+
 	if ( 0 == api ) {
 		std::string err( "not able to create API instance" );
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::create", err );
@@ -87,16 +98,20 @@ PowerFactory* PowerFactory::create()
 PowerFactory::~PowerFactory()
 {
 	rms_->rmsStop( false );
-	deactivateProject();
+
+	DESTROYAPI destroyApi =
+		reinterpret_cast<DESTROYAPI>( GetProcAddress( static_cast<HINSTANCE__*>( dllHandle_ ), "DestroyApiInstanceV2" ) );
+
+	destroyApi( api_ );
 
 	SmartValue::api = 0;
 	api_ = 0;
 	app_ = 0;
 
-	logger( PowerFactoryLoggerBase::OK, "PowerFactory", "releasing API instance" );
-
 	FreeLibrary( dllHandle_ );
 	dllHandle_ = 0;
+
+	logger( PowerFactoryLoggerBase::OK, "PowerFactory", "released API instance" );
 }
 
 
@@ -112,7 +127,7 @@ PowerFactory::PowerFactory( Api* api, const std::string& pfRootDir ) :
 
 int
 PowerFactory::showUI( bool show )
-{	
+{
 	return execute( show ? "rcom/show" : "rcom/hide" );
 }
 
@@ -129,7 +144,7 @@ PowerFactory::activateProject( const std::string& projectName )
 {
 	api_->ReleaseObject( ldf_ );
 	ldf_ = 0;
-	
+
 	// Find the project
 	const char* userName = SmartObject( app_->GetCurrentUser() )->GetName()->GetString();
 	std::string projFullName = std::string( ".\\" ) + std::string( userName )
@@ -151,7 +166,7 @@ PowerFactory::activateProject( const std::string& projectName )
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::activateProject", err );
 		return PowerFactory::UndefinedError;
 	}
-	
+
 	SmartObject activProj( app_->GetActiveProject() );
 	if ( 0 == *activProj ) {
 		std::string err = std::string( "error getting active project: " ) + projectName;
@@ -166,14 +181,14 @@ PowerFactory::activateProject( const std::string& projectName )
 
 	debug = std::string( "active study case: " ) + ( *studyCase ? studyCase->GetName()->GetString() : "NONE" );
 	logger( PowerFactoryLoggerBase::OK, "PowerFactory::activateProject", debug );
-	
+
 	return PowerFactory::Ok;
 }
 
 
 int
 PowerFactory::deactivateProject()
-{	
+{
 	clearCachedObjects();
 	return execute( "ac/de all" );
 }
@@ -181,7 +196,7 @@ PowerFactory::deactivateProject()
 
 int
 PowerFactory::calculatePowerFlow()
-{	
+{
 	SmartObject prj( app_->GetActiveProject() );
 	if ( !*prj ) return PowerFactory::ProjectNotLoaded;
 
@@ -222,7 +237,7 @@ PowerFactory::isPowerFlowValid()
 
 int
 PowerFactory::getCalcRelevantObject( const std::string& className, const std::string & objectName, DataObject* &dataObj, bool cache )
-{	
+{
 	dataObj = 0;
 	MapStrDataObj* objMap = 0;
 	if ( 1 != dataObjByClassMap_.count( className ) ) {
@@ -249,7 +264,7 @@ PowerFactory::getCalcRelevantObject( const std::string& className, const std::st
 				logger( PowerFactoryLoggerBase::Error, "PowerFactory::getCalcRelevantObject", err );
 				return PowerFactory::UndefinedError;
 			}
-			
+
 			unsigned int count = relevantObj->VecGetSize( &error );
 			if ( 0 != error ) {
 				std::string err( "error while evaluating CalcrelevantObjects" );
@@ -269,7 +284,7 @@ PowerFactory::getCalcRelevantObject( const std::string& className, const std::st
 				}
 
 				std::string name = obj->GetName()->GetString();
-				if ( classId == obj->GetClassId() && 0 == name.compare( objectName ) )  {	
+				if ( classId == obj->GetClassId() && 0 == name.compare( objectName ) )  {
 					dataObj = obj;
 					return Ok;
 				}
@@ -296,12 +311,12 @@ PowerFactory::getCalcRelevantObject( const std::string& className, const std::st
 
 int
 PowerFactory::getCalcRelevantObjectMap( const std::string &className, MapStrDataObj* &objMap )
-{	
+{
 	objMap = 0;
 	int returnState = PowerFactory::Ok;
-	
+
 	if ( 1 != dataObjByClassMap_.count( className ) )
-	{	
+	{
 		int error = 0;
 		int classId = app_->GetClassId( className.c_str() );
 		if ( 0 == classId ) {
@@ -337,12 +352,12 @@ PowerFactory::getCalcRelevantObjectMap( const std::string &className, MapStrData
 				return error;
 			}
 
-			if ( classId == obj->GetClassId() ) 
-			{	
+			if ( classId == obj->GetClassId() )
+			{
 				std::string name = obj->GetName()->GetString();
 				if ( false == addObjToMap( *objMap, name, obj ) )
 					returnState = PowerFactory::ObjectNameNotUnique;
-				
+
 				MapStrDataObj* nameMap = dataObjByNameMap_[name];
 				if ( 0 == nameMap )	{
 					nameMap = new MapStrDataObj();
@@ -364,7 +379,7 @@ PowerFactory::getCalcRelevantObjectMap( const std::string &className, MapStrData
 
 int
 PowerFactory::getCalcRelevantObjectByName( const std::string& name,DataObject* &obj )
-{	
+{
 	obj = 0;
 	if ( 1 != dataObjByNameMap_.count( name ) ) return PowerFactory::NoSuchObject;
 
@@ -383,7 +398,7 @@ PowerFactory::getCalcRelevantObjectByName( const std::string& name,DataObject* &
 
 int
 PowerFactory::cacheCalcRelevantObjectNamesOfClass( const std::string& className )
-{	
+{
 	MapStrDataObj *objMap = 0;
 	return getCalcRelevantObjectMap( className, objMap );
 }
@@ -399,7 +414,7 @@ PowerFactory::setWriteCache( bool enable )
 
 
 int PowerFactory::clearCachedObjects()
-{	
+{
 	// Release pointers.
 	MapStrMapStrDataObj::iterator it;
 	for ( it = dataObjByClassMap_.begin(); it != dataObjByClassMap_.end(); ++it )
@@ -421,7 +436,7 @@ int PowerFactory::clearCachedObjects()
 
 int
 PowerFactory::getAttributeDouble( const std::string& name, const char* parameter, double& value)
-{	
+{
 	DataObject* obj = 0;
 	int error = getCalcRelevantObjectByName( name, obj );
 	if( PowerFactory::Ok != error ) return error;
@@ -431,9 +446,9 @@ PowerFactory::getAttributeDouble( const std::string& name, const char* parameter
 
 int
 PowerFactory::getAttributeDouble( DataObject* obj, const char* parameter, double& value )
-{	
+{
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
-	
+
 	int error = 0;
 	value = obj->GetAttributeDouble( parameter, &error );
 	if ( 0 != error ) {
@@ -448,9 +463,9 @@ PowerFactory::getAttributeDouble( DataObject* obj, const char* parameter, double
 
 int
 PowerFactory::getAttributesDouble( DataObject* obj, std::vector<double>& values )
-{	
+{
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
-	
+
 	int error = 0;
 	SmartValue objAttr = obj->GetAttributes( &error );
 	if ( 0 != error ) {
@@ -467,7 +482,7 @@ PowerFactory::getAttributesDouble( DataObject* obj, std::vector<double>& values 
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::getAttributesDouble", err.str() );
 		return PowerFactory::UndefinedError;
 	}
-	
+
 	values.clear();
 	for ( unsigned int i = 0; i < size; ++i ) {
 		values.push_back( objAttr->VecGetDouble( i, &error ) );
@@ -478,7 +493,7 @@ PowerFactory::getAttributesDouble( DataObject* obj, std::vector<double>& values 
 			return PowerFactory::UndefinedError;
 		}
 	}
-	
+
 	return PowerFactory::Ok;
 }
 
@@ -487,7 +502,7 @@ PowerFactory::getAttributesDouble( DataObject* obj, std::vector<double>& values 
 
 int
 PowerFactory::getActiveStudyCaseObject( const char* className,const std::string& objectName, bool recursive, DataObject* &child )
-{	
+{
 	MapStrDataObj objMap;
 	SmartObject activeStudyCase( app_->GetActiveStudyCase() );
 	int error = getChildObjects( className, *activeStudyCase, objMap, recursive );
@@ -506,7 +521,7 @@ PowerFactory::getActiveStudyCaseObject( const char* className,const std::string&
 		logger( PowerFactoryLoggerBase::Warning, "PowerFactory::getActiveStudyCaseObject", warning.str() );
 		return PowerFactory::NoSuchObject;
 	}
-	
+
 	if ( true == objectName.empty() ) //get first element if no name is specified
 	{
 		child = objMap.begin()->second;
@@ -517,24 +532,24 @@ PowerFactory::getActiveStudyCaseObject( const char* className,const std::string&
 			logger( PowerFactoryLoggerBase::Warning, "PowerFactory::getActiveStudyCaseObject", warning.str() );
 			return PowerFactory::ObjectNameNotUnique;
 		}
-		
+
 		return PowerFactory::Ok;
 	}
 
 	if ( 1 != objMap.count(objectName) ) return PowerFactory::NoSuchObject;
-	
+
 	child = objMap[objectName];
 	return PowerFactory::Ok;
 }
 
 
 int
-PowerFactory::getChildObjects( const char* className, DataObject* obj, MapStrDataObj&objMap, bool recursive ) 
+PowerFactory::getChildObjects( const char* className, DataObject* obj, MapStrDataObj&objMap, bool recursive )
 {
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
 
 	int error = 0;
-	
+
 	int filterID = app_->GetClassId( className );
 	SmartValue children( obj->GetChildren( recursive, filterID ) );
 
@@ -555,7 +570,7 @@ PowerFactory::getChildObjects( const char* className, DataObject* obj, MapStrDat
 			logger( PowerFactoryLoggerBase::Error, "PowerFactory::getChildObjects", err.str() );
 			return error;
 		}
-		if (child->GetClassId() == filterID) {	
+		if (child->GetClassId() == filterID) {
 			if ( false == addObjToMap( objMap, child->GetName()->GetString(), child ) ) {
 				objMap.clear();
 				return PowerFactory::ObjectNameNotUnique;
@@ -578,16 +593,16 @@ PowerFactory::setAttributeDouble( const std::string& name, const char* parameter
 
 int
 PowerFactory::setAttributeDouble( DataObject* obj, const char* parameter, double value )
-{	
+{
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
-	
+
 	if ( rms_->rmsIsActive() ) {
 		std::stringstream warning;
 		warning << "unable to set attribute " << parameter << " to " << obj->GetName()->GetString() << " because last non-blocking-command not finished";
 		logger( PowerFactoryLoggerBase::Warning, "PowerFactory::setAttributeDouble", warning.str() );
 		return PowerFactory::LastCommandNotFinished;
 	}
-	
+
 	int error = 0;
 	obj->SetAttributeDouble( parameter, value, &error );
 	if ( 0 != error ) {
@@ -602,9 +617,9 @@ PowerFactory::setAttributeDouble( DataObject* obj, const char* parameter, double
 
 int
 PowerFactory::setAttributesDouble( DataObject* obj,const std::vector<double>& values )
-{	
+{
 	if ( 0 == obj) return PowerFactory::NoSuchObject;
-	
+
 	if ( rms_->rmsIsActive() ) {
 		std::stringstream warning;
 		warning << "unable to set attributes to " << obj->GetName()->GetString() << " because last non-blocking-command has not finished";
@@ -626,14 +641,14 @@ PowerFactory::setAttributesDouble( DataObject* obj,const std::vector<double>& va
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::setAttributesDouble", err.str() );
 		return PowerFactory::UndefinedError;
 	}
-	
+
 	return PowerFactory::Ok;
 }
 
 
 int
 PowerFactory::setMatrixAttributeDouble( DataObject *obj, const char* attribute, int row, int col, double value )
-{	
+{
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
 
 	if ( rms_->rmsIsActive() ) {
@@ -642,7 +657,7 @@ PowerFactory::setMatrixAttributeDouble( DataObject *obj, const char* attribute, 
 		logger( PowerFactoryLoggerBase::Warning, "PowerFactory::setMatrixAttributeDouble", warning.str() );
 		return PowerFactory::LastCommandNotFinished;
 	}
-	
+
 	int error = 0;
 	obj->SetAttributeDouble( attribute, value, row, col, &error );
 	if ( 0 != error ) {
@@ -658,7 +673,7 @@ PowerFactory::setMatrixAttributeDouble( DataObject *obj, const char* attribute, 
 
 int
 PowerFactory::setCharacteristicsTrigger( std::string triggerName, double value )
-{	
+{
 	if ( true == triggerMap_.empty() ) {
 		SmartObject activeStudyCase( app_->GetActiveStudyCase() );
 		int error = getChildObjects( "SetTrigger", *activeStudyCase, triggerMap_, false );
@@ -678,7 +693,7 @@ PowerFactory::setCharacteristicsTrigger( std::string triggerName, double value )
 
 int
 PowerFactory::defineTransferAttributes( const char* className, const char* parameters )
-{	
+{
 	int error = 0;
 	app_->DefineTransferAttributes( className, parameters, &error );
 	if ( 0 != error ) {
@@ -692,7 +707,7 @@ PowerFactory::defineTransferAttributes( const char* className, const char* param
 
 
 int
-PowerFactory::execute( const char* cmd ) 
+PowerFactory::execute( const char* cmd )
 {
 	int error = 0;
 	const Value val( cmd );
@@ -710,7 +725,7 @@ PowerFactory::execute( const char* cmd )
 
 int
 PowerFactory::execute( DataObject* &obj, const char* cmd )
-{	
+{
 	if ( 0 == obj ) return PowerFactory::NoSuchObject;
 
 	int error = 0;
@@ -729,7 +744,7 @@ PowerFactory::execute( DataObject* &obj, const char* cmd )
 /*
  *int
  *PowerFactory::executeRCOMcommand( const char* cmd, bool blocking )
- *{	
+ *{
  *	std::string cmdStr = '\"' + rcomCall + '\"' + cmd + '\"' + '\"';
  *	if ( false == blocking ) cmdStr = "cmd.exe /C " + cmdStr;
  *
@@ -745,9 +760,9 @@ PowerFactory::execute( DataObject* &obj, const char* cmd )
  */
 
 
-int 
+int
 PowerFactory::executeDPL( const std::string& dplScript )
-{	
+{
 	VecVariant noArgs,noRes;
 	return executeDPL( dplScript, noArgs, noRes );
 }
@@ -755,7 +770,7 @@ PowerFactory::executeDPL( const std::string& dplScript )
 
 int
 PowerFactory::executeDPL( const std::string& dplScript, const VecVariant& arguments, VecVariant& results)
-{	
+{
 	int error = 0;
 
 	if ( true == dplMap_.empty() )
@@ -793,7 +808,7 @@ PowerFactory::executeDPL( const std::string& dplScript, const VecVariant& argume
 	if( static_cast<int>( arguments.size() ) > rows )
 	{
 		std::stringstream err;
-		err << "too many arguments (" << arguments.size() << ") specified for " 
+		err << "too many arguments (" << arguments.size() << ") specified for "
 		    << dplScript << " with " << rows << " arguments - can't call script";
 		logger( PowerFactoryLoggerBase::Error, "PowerFactory::executeDPL", err.str() );
 		return PowerFactory::UndefinedError;
@@ -836,10 +851,10 @@ PowerFactory::executeDPL( const std::string& dplScript, const VecVariant& argume
 			logger( PowerFactoryLoggerBase::OK, "PowerFactory::executeDPL", msg.str() );
 			continue;
 		}
-		
+
 		results.push_back( utils::convertStringToVariant( type->GetString(), val->GetString() ) );
 	}
-	
+
 	if( 0 != error )
 	{
 		std::stringstream err;
@@ -854,11 +869,11 @@ PowerFactory::executeDPL( const std::string& dplScript, const VecVariant& argume
 
 bool
 PowerFactory::addObjToMap( MapStrDataObj& map, const std::string identifier, DataObject *obj )
-{	
+{
 	if ( 0 != map.count( identifier ) ) {
 		std::stringstream warning;
 		warning << "object indentifier " << identifier << " not unique for "
-		        << obj->GetFullName()->GetString() << " and " 
+		        << obj->GetFullName()->GetString() << " and "
 				<< map[identifier]->GetFullName()->GetString();
 		logger( PowerFactoryLoggerBase::Warning, "PowerFactory::addObjToMap", warning.str() );
 		return false;

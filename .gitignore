@@ -1,8 +1,10 @@
 # ignore binaries
+*.exe
+binaries/fmi2.*
 binaries/fmiadapter.*
-binaries/libboost_filesystem-vc120-mt-1_58.lib
-binaries/libboost_system-vc120-mt-1_58.lib
-binaries/libboost_thread-vc120-mt-1_58.lib
+binaries/libboost_filesystem-vc141-mt-x64-1_72.lib
+binaries/libboost_system-vc141-mt-x64-1_72.lib
+binaries/libboost_thread-vc141-mt-x64-1_72.lib
 binaries/libfmipp_fmu_frontend.lib
 
 # ignore FMUs for testing
@@ -24,3 +26,6 @@ doc/powerfactory-fmu-doc.pdf
 doc/powerfactory-fmu-doc.ptc
 doc/powerfactory-fmu-doc.synctex.gz
 doc/powerfactory-fmu-doc.toc
+
+# ignore build directories
+release/*msvc*

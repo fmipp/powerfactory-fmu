@@ -4,13 +4,26 @@
 \chapter{Exporting \pf models as FMUs}
 \label{sec:export}
 
-For the purpose of co-simulation it is typically necessary to define a notion of time within a simulation model.
-In \pf there are several ways to do so.
-In the following, it is shown how \pf models have to be created in order to be usable with the \fmipp \pf FMU export utility.
-Furthermore, the procedure to create FMUs from such models is explained.
+For the purpose of co-simulation, it is necessary to define a notion of time within the simulation model and to export this model in a way that allows to execute it.
+For \pf there are several ways to do so, but in general the process involves 2 steps:
+\begin{enumerate}
+
+   \item \textbf{\pf models have to be created in a specific way}, which allows them to be used with the \fmipp \pf FMU export utility.
+   
+   \item These models are then \textbf{packaged as FMUs for Co-Simulation} with the help of the \fmipp \pf Export Utility.
+   This can be either done by using a \textbf{graphical user interface} (see Figure~\ref{fig:gui_create}) or by executing a \textbf{Python script} from the command line.
+
+\end{enumerate}
+The following chapter explains the possible ways to do this.
 Examples for all cases are given in Chapter~\ref{sec:examples}.
 
-
+\begin{figure}[h!]
+%\vspace*{1em}
+\centering{\includegraphics[width=\textwidth]{gui_create}}
+\vspace*{-2mm}
+\caption{Graphical user interface for creating FMUs for Co-Simulation from \pf models.}
+\label{fig:gui_create}
+\end{figure}
 
 \section{Models using external time series and triggers}
 
@@ -54,14 +67,57 @@ Figure~\ref{fig:add_characteristics_from_file} shows how the context menus looks
 
 \clearpage
 
-\subsection{Exporting models using external time series and triggers}
+\subsection{Exporting an FMU from a model using external time series and triggers}
 
-In order to create an FMU from a PFD file that defines characteristics from files and triggers, a \python script has to be executed from the command prompt window (please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this).
+\subsubsection*{Using the graphical user interface}
+
+Once a \pf model according to the instructions above has been created, an FMU can be created with the help of the graphical user interface.
+Switch to the installation directory and start program \texttt{powerfactory\_fmu\_install.exe} (double-click).
+This should bring up the window shown in Figure~\ref{fig:gui_create}, where you can provide the following inputs:
+
+\textit{Required arguments}:
+\begin{itemize}
+   \item \textbf{FMI model identifier}: Specify the FMU model identifier. 
+   \emph{Attention}: The FMU model identifier must fulfill the restrictions for C function names!
+   \item \textbf{\pf PFD file:} Export the \pf model as PFD file and provide its path (absolute or relative).
+\end{itemize}
+
+\textit{Time Advance Mechanism}:
+\begin{itemize}
+   \item \textbf{Trigger}:
+   Triggers for simulation time advance need to be defined in the form \texttt{<name>:<scale>}.
+   The \texttt{name} has to be given according to the trigger's object name in the PFD file.
+   Times given to the FMU are interpreted as seconds, therefore the \texttt{scale} can be adjusted to match the trigger's internal unit of time (e.g., 60 for minutes or 3600 for hours).
+   \item Leave the other boxes in this section empty.
+\end{itemize}
+
+\textit{Optional arguments}:
+\begin{itemize}
+   \item \textbf{Verbosity}: Turn on log messages.
+   \item \textbf{Litter}: Do not clean-up intermediate files (e.g., log file with debug messages from Visual Studio compiler).
+   \ietm \textbf{Input variable definition file} and \textbf{Output variable definition file}:
+   Define which model variables of the \pf model should be exposed as input and output variables of the FMU.
+   To do so, provide files containing lists of these variable names.
+   These lists are expected to be in clear text, listing exactly one valid variable name per line.
+   As explained in Section~\ref{sec:naming_convention:obj_param}, variable names are supposed to be of the  form \texttt{<obj-type>.<obj-name>.<param-name>}.
+   \item \textbf{FMI version}: Specify FMI version (default: 2).
+   \item \textbf{\pf installation directory}: Absolute path to \pf installation directory.\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+   \item \textbf{Additional arguments}:
+   \begin{itemize}
+      \item Additional files may be specified (e.g., weather data or input/output name lists) that will be automatically copied to the FMU. The specified files paths may be absolute or relative.
+      \item Start values for variables may be defined. For instance, to set variable with name \verb!var1! to value 12.34, specify \verb!var1=12.34! as optional argument.
+   \end{itemize}
+\end{itemize}
+
+
+\subsubsection*{Export via Python script}
+
+Alternatively, a \python script can be executed from the command prompt window (please refer to the \href{https://docs.python.org/3/faq/windows.html}{\python~FAQ} in case you need assistance with this).
 Open the command prompt window and execute the script \texttt{powerfactory\_fmu\_create.py}:
 
 \begin{verbatim}
-python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
-  -m model_id -p pfd_file -i input_var_file -o output_var_file
+python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v]
+  [-f {1|2}] -m model_id -p pfd_file -i input_var_file -o output_var_file
   -t name:scale] [-d pf_install_dir] [additional_file_1 ... ]
   [var1=start_val1 ...]
 \end{verbatim}
@@ -79,8 +135,9 @@ Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
 \end{itemize}
 \textit{Optional input arguments}:
 \begin{itemize}
-  \item \verb!-h, --help!: display the help screen
+  \item \verb!-f, --fmi-version!: specify the FMI version (1: FMI~1.0, 2: FMI~2.0, default: 2)
   \item \verb!-v, --verbose!: turn on log messages
+  \item \verb!-h, --help!: display the help screen
   \item \verb!-l, --litter!: do not clean-up intermediate files
   \item \verb!-d, --pf-install-dir!: path to \pf installation directory\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
 \end{itemize}
@@ -178,16 +235,61 @@ The script calculates the hour of the year (by multiplication of $0.000277778 = 
 \label{fig:dpl_script_setup}
 \end{figure}
 
-\subsection{Exporting models using a \dplscript to define the time}
+\subsection{Exporting an FMU from a model using a \dplscript to define the time}
 
-In order to create an FMU from a PFD file that uses a \dplscript to advance time, a \python script has to be executed from the command prompt window (please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this).
+\subsubsection*{Using the graphical user interface}
+
+Once a \pf model according to the instructions above has been created, an FMU can be created with the help of the graphical user interface.
+Switch to the installation directory and start program \texttt{powerfactory\_fmu\_install.exe} (double-click).
+This should bring up the window shown in Figure~\ref{fig:gui_create}, where you can provide the following inputs:
+
+\textit{Required arguments}:
+\begin{itemize}
+   \item \textbf{FMI model identifier}: Specify the FMU model identifier. 
+   \emph{Attention}: The FMU model identifier must fulfill the restrictions for C function names!
+   \item \textbf{\pf PFD file:} Export the \pf model as PFD file and provide its path (absolute or relative).
+\end{itemize}
+
+\textit{Time Advance Mechanism}:
+\begin{itemize}
+   \item \textbf{DPL script}:
+   Specify a DPL-script for advancing simulation time. 
+   A single \dplscript may be specified to advance simulation time in the form \texttt{<name>:<scale>:<offset>}.
+   The \texttt{name} has to be given according to the script's name in the PFD file.
+   Times given to the FMU are interpreted as seconds, therefore the \texttt{scale} and \texttt{offset} can be adjusted to match the \dplscript's internal representation of time (e.g., 60 for minutes or 3600 for hours).
+   \item Leave the other boxes in this section empty.
+\end{itemize}
+
+\textit{Optional arguments}:
+\begin{itemize}
+   \item \textbf{Verbosity}: Turn on log messages.
+   \item \textbf{Litter}: Do not clean-up intermediate files (e.g., log file with debug messages from Visual Studio compiler).
+   \ietm \textbf{Input variable definition file} and \textbf{Output variable definition file}:
+   Define which model variables of the \pf model should be exposed as input and output variables of the FMU.
+   To do so, provide files containing lists of these variable names.
+   These lists are expected to be in clear text, listing exactly one valid variable name per line.
+   As explained in Section~\ref{sec:naming_convention:obj_param}, variable names are supposed to be of the  form \texttt{<obj-type>.<obj-name>.<param-name>}.
+   \item \textbf{FMI version}: Specify FMI version (default: 2).
+   \item \textbf{\pf installation directory}: Absolute path to \pf installation directory.\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+   \item \textbf{Additional arguments}:
+   \begin{itemize}
+      \item Additional files may be specified (e.g., weather data or input/output name lists) that will be automatically copied to the FMU. The specified files paths may be absolute or relative.
+      \item Start values for variables may be defined. For instance, to set variable with name \verb!var1! to value 12.34, specify \verb!var1=12.34! as optional argument.
+   \end{itemize}
+\end{itemize}
+
+\clearpage
+
+\subsubsection*{Export via Python script}
+
+Alternatively, a \python script can be executed from the command prompt window (please refer to the \href{https://docs.python.org/3/faq/windows.html}{\python~FAQ} in case you need assistance with this).
 Open the command prompt window and execute the script \texttt{powerfactory\_fmu\_create.py}:
 
 \begin{verbatim}
 python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
-  -m model_id -p pfd_file  -i input_var_file -o output_var_file -s
-  name:scale:offset [-d pf_install_dir] [additional_file_1 ... ]
-  [var1=start_val1 ...]
+  [-f {1|2}] -m model_id -p pfd_file  -i input_var_file 
+  -o output_var_file -s name:scale:offset [-d pf_install_dir] 
+  [additional_file_1 ... ] [var1=start_val1 ...]
 \end{verbatim}
 
 The path to the \fmipp \pf FMU export utility directory \verb!<path_to_pf_fmu_dir>! may be relative or absolute.
@@ -203,6 +305,7 @@ Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
 \end{itemize}
 \textit{Optional input arguments}:
 \begin{itemize}
+  \item \verb!-f, --fmi-version!: specify the FMI version (1: FMI~1.0, 2: FMI~2.0, default: 2)
   \item \verb!-h, --help!: display the help screen
   \item \verb!-v, --verbose!: turn on log messages
   \item \verb!-l, --litter!: do not clean-up intermediate files
@@ -250,7 +353,7 @@ It is recommended -- but not necessary -- to name this new \dslmodel as \emph{FM
 
 \subsubsection*{Including \dslmodel FMIAdapter into a composite model}
 
-To use the \dslmodel FMIAdapter it has to be included into a composite model.
+To use the \dslmodel FMIAdapter, it has to be included into a composite model.
 This can be done by simply adding a dedicated slot to a composite frame (see \pf User Manual, Section~28.10.2 The Composite Frame), see for instance Figure~\ref{fig:fmiadapter_slot}.
 The corresponding slot does not have to be connected to any other slot.
 FMIAdapter's output signal called \emph{trigger} is mostly intended for debugging purposes, sending a trigger signal whenever an event has been issued.
@@ -288,16 +391,57 @@ For retrieving outputs from an RMS simulation, object parameters can be accessed
 \end{figure}
 
 
-\subsection{Exporting models for RMS simulation}
+\subsection{Exporting an FMU from a model for RMS simulation}
 
-In order to create an FMU from a PFD file that is intended for RMS simulation, a \python script has to be executed from the command prompt window (please refer to the \href{https://docs.python.org/2/faq/windows.html}{\python~FAQ} in case you need assistance with this).
+\subsubsection*{Using the graphical user interface}
+
+Once a \pf model according to the instructions above has been created, an FMU can be created with the help of the graphical user interface.
+Switch to the installation directory and start program \texttt{powerfactory\_fmu\_install.exe} (double-click).
+This should bring up the window shown in Figure~\ref{fig:gui_create}, where you can provide the following inputs:
+
+\textit{Required arguments}:
+\begin{itemize}
+   \item \textbf{FMI model identifier}: Specify the FMU model identifier. 
+   \emph{Attention}: The FMU model identifier must fulfill the restrictions for C function names!
+   \item \textbf{\pf PFD file:} Export the \pf model as PFD file and provide its path (absolute or relative).
+\end{itemize}
+
+\textit{Time Advance Mechanism}:
+\begin{itemize}
+   \item \textbf{RMS simulation}:
+   Specify the integrator step size in seconds.
+   \item Leave the other boxes in this section empty.
+\end{itemize}
+
+\textit{Optional arguments}:
+\begin{itemize}
+   \item \textbf{Verbosity}: Turn on log messages.
+   \item \textbf{Litter}: Do not clean-up intermediate files (e.g., log file with debug messages from Visual Studio compiler).
+   \ietm \textbf{Input variable definition file} and \textbf{Output variable definition file}:
+   Define which model variables of the \pf model should be exposed as input and output variables of the FMU.
+   To do so, provide files containing lists of these variable names.
+   These lists are expected to be in clear text, listing exactly one valid variable name per line.
+   As explained in Section~\ref{sec:naming_convention:obj_param}, variable names are supposed to be of the  form \texttt{<obj-type>.<obj-name>.<param-name>}.
+   \item \textbf{FMI version}: Specify FMI version (default: 2).
+   \item \textbf{\pf installation directory}: Absolute path to \pf installation directory.\footnote{It is usually not necessary to provide the path to the \pf installation directory, unless the FMU is intended to run on another machine with a different installation directory path.}
+   \item \textbf{Additional arguments}:
+   \begin{itemize}
+      \item Additional files may be specified (e.g., weather data or input/output name lists) that will be automatically copied to the FMU. The specified files paths may be absolute or relative.
+      \item Start values for variables may be defined. For instance, to set variable with name \verb!var1! to value 12.34, specify \verb!var1=12.34! as optional argument.
+   \end{itemize}
+\end{itemize}
+
+
+\subsubsection*{Export via Python script}
+
+Alternatively, a \python script can be executed from the command prompt window (please refer to the \href{https://docs.python.org/3/faq/windows.html}{\python~FAQ} in case you need assistance with this).
 Open the command prompt window and execute the script \texttt{powerfactory\_fmu\_create.py}:
 
 \begin{verbatim}
 python.exe <path_to_pf_fmu_dir>powerfactory_fmu_create.py [-h] [-v] 
-  -m model_id -p pfd_file -i input_var_file -o output_var_file
-  -r step-size [-d pf_install_dir] [additional_file_1 ... ]
-  [var1=start_val1 ...]
+  [-f {1,2}] -m model_id -p pfd_file -i input_var_file 
+  -o output_var_file -r step-size [-d pf_install_dir] 
+  [additional_file_1 ... ] [var1=start_val1 ...]
 \end{verbatim}
 
 The path to the \fmipp \pf FMU export utility directory \verb!<path_to_pf_fmu_dir>! may be relative or absolute.
@@ -313,6 +457,7 @@ Optional arguments are enclosed by squared brackets \verb![!$\,$\ldots\verb!]!.
 \end{itemize}
 \textit{Optional input arguments}:
 \begin{itemize}
+  \item \verb!-f, --fmi-version!: specify the FMI version (1: FMI~1.0, 2: FMI~2.0, default: 2)
   \item \verb!-h, --help!: display the help screen
   \item \verb!-v, --verbose!: turn on log messages
   \item \verb!-l, --litter!: do not clean-up intermediate files

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------
- * Copyright (c) 2015-2017, AIT Austrian Institute of Technology GmbH.
+ * Copyright (c) 2015-2020, AIT Austrian Institute of Technology GmbH.
  * All rights reserved. See file POWERFACTORY_FMU_LICENSE.txt for details.
  * -----------------------------------------------------------------------*/
 
@@ -23,11 +23,11 @@
 // Dependencies on FMI++.
 #include "import/base/include/ModelDescription.h"
 
-// Check for compilation with Visual Studio 2013 (required).
-#if ( _MSC_VER == 1800 )
+// Check for compilation with Visual Studio 2017 (required).
+#if ( _MSC_VER >= 1910 )
 #include "windows.h"
 #else
-#error This project requires Visual Studio 2013.
+#error This project requires Visual Studio 2017.
 #endif
 
 using namespace std;
@@ -75,7 +75,7 @@ TriggerTimeAdvance::instantiate( const ModelDescription::Properties& vendorAnnot
 		string name = attributes.get<string>( "name" );
 		fmi2Real scale = attributes.get<fmi2Real>( "scale" );
 
-		api::v1::DataObject* trigger;
+		api::v2::DataObject* trigger;
 
 		// Search for trigger object by class name (SetTrigger) and object name.
 		if ( pf_->Ok !=
